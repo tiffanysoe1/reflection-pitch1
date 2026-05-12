@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>04 · Landscape — Reflection AI pitch</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/site.css">
+</head>
+<body data-page="landscape" data-screen-label="04 Landscape">
+<div id="site-nav"></div>
+
+<main>
+  <header class="page-header">
+    <div class="wrap" style="font-size: 2px">
+      <div class="kicker"><span class="page-num">04 / 08</span> Client & competitor landscape</div>
+      <h1>Client &amp; Competitor Landscape</h1>
+      <p class="lede" style="font-size: 22px">A working map of enterprises &amp; sovereign AI—lessons learned from Timothee's (Mistral) detailed interview.</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="caption-uppercase" style="margin-bottom: 24px;">04.1 — WHAT IS IMPORTANT?</div>
+      <div class="grid-3" style="gap: 16px;">
+        <div class="card">
+          <div class="text-mono text-coral" style="font-size: 12px; margin-bottom: 12px;">SLICE A</div>
+          <h3 style="font-size: 24px; letter-spacing: -0.3px; margin: 0 0 12px;">Introduction</h3>
+          <p style="margin: 0; font-size: 15px; line-height: 1.55;">According to a recent interview with Timothee(Mistral), the real value in enterprise is yet to be unlocked. There is a need for the rest of the stack: the serving platform, tooling and expertise to get into enterprise workflows to help that information.<br><br>This similar to what Misha mentioned in Nvidia GTC </p>
+        </div>
+        <div class="card">
+          <div class="text-mono text-coral" style="font-size: 12px; margin-bottom: 12px;">SLICE B</div>
+          <h3 style="font-size: 24px; letter-spacing: -0.3px; margin: 0 0 12px;">Pre-training/Fine-Tuning Service </h3>
+          <p style="margin: 0; font-size: 15px; line-height: 1.55;">Some enterprise data is proprietary or domain-specific. When internal data is so new, and your model is trained on the public web, you need alot of tokens to understand it. In this case, customized pre-training is recommended. A company chose fine-tuning for efficiency reasons - smaller models that achieve strong performance on a narrow task. </p>
+        </div>
+        <div class="card">
+          <div class="text-mono text-coral" style="font-size: 12px; margin-bottom: 12px;">SLICE C</div>
+          <h3 style="font-size: 24px; letter-spacing: -0.3px; margin: 0 0 12px;">Coding Agents</h3>
+          <p style="margin: 0; font-size: 15px; line-height: 1.55;">According to Timothee, Enterprise do not really think agents are useful. Complex workflows are preferred. The issue of agents is autonomy - this agent has access to some data that is privileged, but this other agent is publishing it to something that is public.You might have some governance concerns where some agent is acting on something very critical, and you don't know that the data it got has been approved.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tight" style="background: var(--color-surface-soft);">
+    <div class="wrap">
+      <div class="caption-uppercase" style="margin-bottom: 24px;">04.2 — WHAT IS IMPORTANT?</div>
+      <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: start;">
+        <div>
+          <h2 style="font-size: 36px; letter-spacing: -0.5px; margin: 0 0 24px;">Mistral </h2>
+          <p style="font-size: 17px; line-height: 1.6; color: var(--color-body); max-width: 60ch;">
+            My interpretation is that Mistral is less ambitious about being the best "open-model" because they saw the difficulty of translating intelligence into ROI due to tooling, software stacks, etc.
+          </p>
+        </div>
+        <div></div>
+      </div>
+
+      <div class="rule-list" style="margin-top: 32px;">
+        <div>
+          <span class="num">A</span>
+          <div>
+            <div class="item-title">Legacy Codebases</div>
+            <p>Migrating a massive codebase is a high risk, stressful operation that CTOs generally want to avoid. Mistral stack can be deployed on premise or within the customer's own virtual private cloud. This sounds similar to the problem Asimov was trying to solve.</p>
+          </div>
+        </div>
+        <div>
+          <span class="num">B</span>
+          <div>
+            <div class="item-title">Data</div>
+            <p>Companies are worried of data leaking through departments. They are currently building AI projects that are siloed and full value is only released when the company is confident enough to break the siloes and let AI access the entire context. As soon as you have agents running in the background, set them to run a bunch of ETL, demand for tokens will jump. For now, the boring software work must be done. </p>
+          </div>
+        </div>
+        <div>
+          <span class="num">C</span>
+          <div>
+            <div class="item-title">The ambitious product vision </div>
+            <p>Instead of Mistral having to manually help every customer, the goal is to provide a self-serve system. Customers should be able to easily gather their private, messy IP and "consolidate" it themselves. The platform should allow an enterprise to build a bespoke model that understands engineering. Timothee acknowledged this is far from possible. </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom: 64px;">
+    <div class="sidenote">
+      <span class="label">Caveat</span>
+      I am drawing this map from public posts, podcasts, and a couple of conversations with friends inside the field. The internal version of this map you have is almost certainly more accurate. If there’s a slice I’m missing, I’d like to be told.
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="scripts/chrome.js"></script>
+<script src="scripts/tweaks.js"></script>
+</body>
+</html>

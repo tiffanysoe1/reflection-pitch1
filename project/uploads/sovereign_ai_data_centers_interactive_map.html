@@ -1,0 +1,268 @@
+
+<h2 class="sr-only">Interactive world map of individual sovereign and government-backed AI data centers, filterable by status and region. Click a dot to see facility details.</h2>
+
+<style>
+#sov-map-wrap { position: relative; width: 100%; }
+#sov-tooltip {
+  position: fixed; background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-secondary); border-radius: 8px;
+  padding: 10px 14px; font-size: 12px; color: var(--color-text-primary);
+  pointer-events: none; opacity: 0; z-index: 9999; max-width: 240px;
+  line-height: 1.5;
+}
+.sov-filter-btn {
+  font-size: 11px; padding: 4px 10px; border-radius: 20px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary); cursor: pointer;
+}
+.sov-filter-btn.active {
+  background: #1B3A6B; color: #fff; border-color: #1B3A6B;
+}
+#sov-count { font-size: 12px; color: var(--color-text-secondary); margin-top: 6px; }
+</style>
+
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;">
+  <span style="font-size:12px;color:var(--color-text-secondary);margin-right:4px;">Status:</span>
+  <button class="sov-filter-btn active" data-filter="all">All</button>
+  <button class="sov-filter-btn" data-filter="operational">Operational</button>
+  <button class="sov-filter-btn" data-filter="construction">Under construction</button>
+  <button class="sov-filter-btn" data-filter="planned">Planned / announced</button>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:8px;font-size:11px;">
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;background:#1D9E75;display:inline-block;"></span>Operational</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;background:#FAC775;display:inline-block;"></span>Under construction</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;background:#85B7EB;display:inline-block;"></span>Planned / announced</span>
+</div>
+
+<div id="sov-count">Showing all 60 sovereign & government-backed AI facilities</div>
+<div id="sov-tooltip"></div>
+<div id="sov-map-wrap">
+  <div id="sov-map" style="width:100%;border-radius:12px;overflow:hidden;border:0.5px solid var(--color-border-tertiary);"></div>
+</div>
+
+<div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;">
+  <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;">
+    <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);" id="stat-total">60</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);">Tracked facilities</div>
+  </div>
+  <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;">
+    <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);">35+</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);">Countries with sovereign AI compute</div>
+  </div>
+  <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;">
+    <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);">$100B+</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);">Projected sovereign AI spend by 2026</div>
+  </div>
+  <div style="background:var(--color-background-secondary);border-radius:8px;padding:10px 12px;">
+    <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);">80%+</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);">Investment: Middle East + East Asia</div>
+  </div>
+</div>
+<p style="font-size:11px;color:var(--color-text-tertiary);margin-top:8px;">Sources: AI Data Center Index (Apr 2026), CNAS Sovereign AI Index (Jan 2026), public government announcements. "Sovereign" = government-backed, nationally controlled, or sovereign-fund-operated facility. Dot size ∝ capacity (MW). Click any dot for details.</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+const facilities = [
+  // UAE
+  { name:"G42 Stargate UAE–US AI Campus", country:"UAE", city:"Abu Dhabi", lat:24.45, lng:54.38, mw:5000, status:"construction", operator:"G42 / OpenAI / NVIDIA", type:"Sovereign fund + hyperscaler" },
+  { name:"OpenAI–G42 Abu Dhabi AI Megacluster", country:"UAE", city:"Abu Dhabi", lat:24.40, lng:54.50, mw:5000, status:"planned", operator:"OpenAI / G42", type:"Sovereign AI campus" },
+  { name:"Humain AI Data Center (Riyadh)", country:"Saudi Arabia", city:"Riyadh", lat:24.68, lng:46.72, mw:2000, status:"planned", operator:"Humain (Saudi Aramco)", type:"National AI initiative" },
+  { name:"SDAIA National AI Centre", country:"Saudi Arabia", city:"Riyadh", lat:24.72, lng:46.65, mw:500, status:"operational", operator:"SDAIA", type:"Government" },
+  { name:"NEOM DataVolt AI Campus", country:"Saudi Arabia", city:"NEOM", lat:28.0, lng:35.0, mw:800, status:"construction", operator:"NEOM / DataVolt", type:"Sovereign megaproject" },
+  { name:"DataVolt Saudi AI Campus (Riyadh)", country:"Saudi Arabia", city:"Riyadh", lat:24.60, lng:46.80, mw:300, status:"construction", operator:"DataVolt (Saudi Arabia)", type:"Sovereign AI" },
+  { name:"KAUST AI Research Cluster", country:"Saudi Arabia", city:"Thuwal", lat:22.31, lng:39.10, mw:120, status:"operational", operator:"KAUST", type:"Government university" },
+  { name:"Aramco Digital Cloud", country:"Saudi Arabia", city:"Dhahran", lat:26.31, lng:50.13, mw:200, status:"operational", operator:"Aramco Digital", type:"State enterprise" },
+  // India
+  { name:"IndiaAI Mission Supercomputing Hub (Pune)", country:"India", city:"Pune", lat:18.52, lng:73.86, mw:150, status:"construction", operator:"MeitY / C-DAC", type:"National AI mission" },
+  { name:"IndiaAI GPU Cluster (Hyderabad)", country:"India", city:"Hyderabad", lat:17.38, lng:78.49, mw:100, status:"operational", operator:"Govt of Telangana / Neysa", type:"State sovereign AI" },
+  { name:"Reliance Jio AI Data Centre (Mumbai)", country:"India", city:"Mumbai", lat:19.07, lng:72.88, mw:300, status:"construction", operator:"Reliance Industries (Jio)", type:"Strategic national" },
+  { name:"Yotta Data Centre (Navi Mumbai)", country:"India", city:"Navi Mumbai", lat:19.03, lng:73.02, mw:100, status:"operational", operator:"Yotta Data Services", type:"Sovereign-aligned" },
+  // France
+  { name:"Mistral Compute (Paris)", country:"France", city:"Paris", lat:48.86, lng:2.35, mw:200, status:"planned", operator:"Mistral AI", type:"National AI champion" },
+  { name:"OVHcloud Sovereign Cloud (Roubaix)", country:"France", city:"Roubaix", lat:50.69, lng:3.18, mw:150, status:"operational", operator:"OVHcloud", type:"National sovereign cloud" },
+  { name:"Scaleway (Paris-2)", country:"France", city:"Paris", lat:48.90, lng:2.32, mw:80, status:"operational", operator:"Scaleway (Iliad)", type:"French sovereign cloud" },
+  { name:"Fluidstack–France AI Supercomputer", country:"France", city:"Multiple sites", lat:47.0, lng:2.0, mw:1000, status:"planned", operator:"Fluidstack / French Govt", type:"National AI infrastructure" },
+  // Germany
+  { name:"Aleph Alpha (Heidelberg)", country:"Germany", city:"Heidelberg", lat:49.40, lng:8.68, mw:50, status:"operational", operator:"Aleph Alpha", type:"National AI champion" },
+  { name:"Forschungszentrum Jülich (JUWELS)", country:"Germany", city:"Jülich", lat:50.90, lng:6.41, mw:80, status:"operational", operator:"Forschungszentrum Jülich", type:"Government research" },
+  { name:"Leibniz Supercomputing Centre", country:"Germany", city:"Garching", lat:48.26, lng:11.67, mw:40, status:"operational", operator:"LRZ / Bavarian Govt", type:"Government HPC" },
+  // UK
+  { name:"UK AI Research Resource (Edinburgh)", country:"UK", city:"Edinburgh", lat:55.95, lng:-3.19, mw:250, status:"construction", operator:"UKRI / UK Government", type:"Government" },
+  { name:"Isambard-AI (Bristol)", country:"UK", city:"Bristol", lat:51.45, lng:-2.59, mw:80, status:"operational", operator:"Univ of Bristol / UKRI", type:"National AI" },
+  { name:"Dawn AI Supercomputer (Cambridge)", country:"UK", city:"Cambridge", lat:52.21, lng:0.12, mw:30, status:"operational", operator:"Univ of Cambridge / Intel", type:"National research" },
+  { name:"Kao Data (Harlow)", country:"UK", city:"Harlow", lat:51.77, lng:0.09, mw:100, status:"operational", operator:"Kao Data", type:"UK sovereign-aligned" },
+  // Japan
+  { name:"SoftBank AI Data Centre (Tokyo)", country:"Japan", city:"Tokyo", lat:35.68, lng:139.69, mw:300, status:"construction", operator:"SoftBank Corp.", type:"National AI strategy" },
+  { name:"AIST AI Research Centre (Tsukuba)", country:"Japan", city:"Tsukuba", lat:36.08, lng:140.12, mw:50, status:"operational", operator:"AIST / Govt of Japan", type:"Government research" },
+  { name:"Naver Cloud Japan DC", country:"Japan", city:"Osaka", lat:34.69, lng:135.50, mw:60, status:"operational", operator:"Naver Cloud", type:"Strategic AI" },
+  // South Korea
+  { name:"Stock Farm Road AI Campus (Jeollanam-do)", country:"South Korea", city:"Jeollanam-do", lat:34.82, lng:126.46, mw:3000, status:"planned", operator:"Stock Farm Road / Provincial Govt", type:"Government-backed" },
+  { name:"SK Telecom AI Data Centre (Seoul)", country:"South Korea", city:"Seoul", lat:37.56, lng:126.97, mw:200, status:"construction", operator:"SK Telecom", type:"National strategic" },
+  { name:"Kakao Cloud AI Centre", country:"South Korea", city:"Ansan", lat:37.32, lng:126.83, mw:100, status:"operational", operator:"Kakao Cloud", type:"National AI" },
+  // Singapore
+  { name:"NSCC Singapore (Aspire 2)", country:"Singapore", city:"Singapore", lat:1.34, lng:103.82, mw:40, status:"operational", operator:"NSCC / NRF Singapore", type:"Government" },
+  { name:"Oracle Cloud Isolated Region (MOD)", country:"Singapore", city:"Singapore", lat:1.29, lng:103.85, mw:30, status:"operational", operator:"Oracle / Singapore MOD", type:"Defence sovereign" },
+  { name:"Singtel–NVIDIA AI Factory", country:"Singapore", city:"Singapore", lat:1.32, lng:103.80, mw:50, status:"construction", operator:"Singtel / NVIDIA", type:"National AI strategy" },
+  // Australia
+  { name:"NEXTDC Cisco Secure AI Factory", country:"Australia", city:"Sydney", lat:-33.87, lng:151.21, mw:60, status:"operational", operator:"NEXTDC / Cisco / NVIDIA", type:"National AI Plan" },
+  { name:"AirTrunk Sydney (SYD10)", country:"Australia", city:"Sydney", lat:-33.80, lng:150.97, mw:200, status:"operational", operator:"AirTrunk", type:"National sovereign" },
+  // Canada
+  { name:"Bell Canada AI Data Centre (Saskatchewan)", country:"Canada", city:"Regina", lat:50.45, lng:-104.62, mw:300, status:"planned", operator:"Bell Canada (BCE)", type:"Sovereign AI programme" },
+  { name:"BUZZ HPC GTA Campus", country:"Canada", city:"Toronto", lat:43.65, lng:-79.38, mw:7, status:"planned", operator:"BUZZ HPC / HIVE", type:"Sovereign AI" },
+  { name:"Wonder Valley AI Park (Alberta)", country:"Canada", city:"Alberta", lat:54.0, lng:-116.0, mw:7500, status:"planned", operator:"O'Leary Ventures / Greenview", type:"Sovereign-aligned" },
+  { name:"eStruxture Montreal Campus", country:"Canada", city:"Montreal", lat:45.50, lng:-73.57, mw:100, status:"operational", operator:"eStruxture", type:"Canadian sovereign cloud" },
+  // EU / EuroHPC
+  { name:"EuroHPC LUMI (Finland)", country:"Finland", city:"Kajaani", lat:64.22, lng:27.73, mw:17, status:"operational", operator:"CSC / EuroHPC JU", type:"EU sovereign supercomputer" },
+  { name:"EuroHPC MareNostrum 5 (Spain)", country:"Spain", city:"Barcelona", lat:41.38, lng:2.17, mw:20, status:"operational", operator:"BSC / EuroHPC JU", type:"EU sovereign" },
+  { name:"EuroHPC CINECA (Italy)", country:"Italy", city:"Bologna", lat:44.49, lng:11.34, mw:25, status:"operational", operator:"CINECA / EuroHPC JU", type:"EU sovereign" },
+  { name:"EuroHPC Sofia Tech Park (Bulgaria)", country:"Bulgaria", city:"Sofia", lat:42.68, lng:23.32, mw:10, status:"operational", operator:"Sofia Tech Park / EuroHPC JU", type:"EU sovereign" },
+  { name:"LuxProvide (MeluXina, Luxembourg)", country:"Luxembourg", city:"Bissen", lat:49.78, lng:6.07, mw:5, status:"operational", operator:"LuxProvide / EuroHPC JU", type:"EU sovereign" },
+  { name:"EuroHPC Romanian Cluster", country:"Romania", city:"Bucharest", lat:44.43, lng:26.10, mw:10, status:"planned", operator:"EU EuroHPC / Romanian Consortium", type:"EU sovereign" },
+  // Norway / Nordics
+  { name:"Microsoft Norway (100k GPU cluster)", country:"Norway", city:"Oslo", lat:59.91, lng:10.75, mw:500, status:"construction", operator:"Microsoft", type:"Sovereign-aligned (NATO)" },
+  { name:"Green Mountain AS (Stavanger)", country:"Norway", city:"Stavanger", lat:58.97, lng:5.73, mw:60, status:"operational", operator:"Green Mountain AS", type:"Nordic sovereign cloud" },
+  { name:"atNorth Iceland Campus", country:"Iceland", city:"Reykjavik", lat:64.13, lng:-21.90, mw:100, status:"operational", operator:"atNorth", type:"Nordic sovereign" },
+  // Kazakhstan / Central Asia
+  { name:"Kazakhstan AI Ministry Data Centre", country:"Kazakhstan", city:"Astana", lat:51.18, lng:71.45, mw:50, status:"planned", operator:"Kazakhstan Ministry of AI", type:"Government" },
+  // Africa
+  { name:"Raxio Tanzania DC", country:"Tanzania", city:"Dar es Salaam", lat:-6.79, lng:39.21, mw:6, status:"operational", operator:"Raxio Group", type:"National digital infra" },
+  { name:"Ethiopian AI Institute DC", country:"Ethiopia", city:"Addis Ababa", lat:9.02, lng:38.74, mw:15, status:"planned", operator:"Ethiopian AI Institute", type:"Government" },
+  { name:"MTN Group AI DC (Nigeria)", country:"Nigeria", city:"Lagos", lat:6.52, lng:3.38, mw:20, status:"planned", operator:"MTN Group / Genova", type:"National strategic" },
+  { name:"TAQA Morocco Data Centre", country:"Morocco", city:"Casablanca", lat:33.59, lng:-7.62, mw:25, status:"planned", operator:"TAQA Morocco", type:"National" },
+  { name:"Africa Data Centres (Johannesburg)", country:"South Africa", city:"Johannesburg", lat:-26.20, lng:28.04, mw:40, status:"operational", operator:"Africa Data Centres", type:"Regional sovereign" },
+  // Egypt
+  { name:"Government of Egypt National DC", country:"Egypt", city:"Cairo", lat:30.06, lng:31.25, mw:50, status:"planned", operator:"Govt of Egypt / MCIT", type:"Government" },
+  // Armenia
+  { name:"Government of Armenia AI DC", country:"Armenia", city:"Yerevan", lat:40.18, lng:44.51, mw:10, status:"planned", operator:"Government of Armenia", type:"Government" },
+  // Qatar / Bahrain / Kuwait / Oman
+  { name:"QIA Brookfield Qatar AI Campus", country:"Qatar", city:"Doha", lat:25.28, lng:51.53, mw:200, status:"planned", operator:"QIA / Brookfield", type:"Sovereign wealth" },
+  { name:"Oman Data Park (Muscat)", country:"Oman", city:"Muscat", lat:23.61, lng:58.59, mw:40, status:"operational", operator:"Oman Data Park / Omantel", type:"Government-backed" },
+  { name:"Ooredoo Kuwait–NVIDIA AI DC", country:"Kuwait", city:"Kuwait City", lat:29.37, lng:47.98, mw:30, status:"planned", operator:"Ooredoo / NVIDIA", type:"National AI" },
+  { name:"Bahrain Cloud DC (Batelco)", country:"Bahrain", city:"Manama", lat:26.21, lng:50.59, mw:20, status:"operational", operator:"Batelco / Qareeb", type:"National" },
+  // Jordan
+  { name:"Aqaba Digital Hub", country:"Jordan", city:"Aqaba", lat:29.52, lng:35.01, mw:80, status:"planned", operator:"Aqaba Digital Hub", type:"National economic zone" },
+  // Vietnam
+  { name:"Viettel Group DC (Hanoi)", country:"Vietnam", city:"Hanoi", lat:21.03, lng:105.83, mw:60, status:"operational", operator:"Viettel Group", type:"State enterprise" },
+];
+
+const statusColor = {
+  operational: "#1D9E75",
+  construction: "#FAC775",
+  planned: "#85B7EB"
+};
+
+const width = 960, height = 500;
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+
+const svg = d3.select('#sov-map').append('svg')
+  .attr('viewBox', `0 0 ${width} ${height}`)
+  .attr('width', '100%')
+  .attr('role','img')
+  .attr('aria-label', 'World map of sovereign and government-backed AI data centers');
+
+const projection = d3.geoNaturalEarth1().scale(153).translate([width/2, height/2 + 20]);
+const path = d3.geoPath(projection);
+const tip = document.getElementById('sov-tooltip');
+
+let activeFilter = 'all';
+
+function rScale(mw) {
+  if (!mw) return 4;
+  if (mw >= 3000) return 14;
+  if (mw >= 1000) return 11;
+  if (mw >= 300) return 8;
+  if (mw >= 100) return 6;
+  if (mw >= 30) return 5;
+  return 4;
+}
+
+function getStatusLabel(s) {
+  if (s === 'operational') return 'Operational';
+  if (s === 'construction') return 'Under construction';
+  return 'Planned / announced';
+}
+
+function updateCount() {
+  const visible = activeFilter === 'all' ? facilities : facilities.filter(f => f.status === activeFilter || (activeFilter === 'planned' && f.status === 'planned'));
+  document.getElementById('sov-count').textContent = `Showing ${visible.length} sovereign & government-backed AI facilities`;
+  document.getElementById('stat-total').textContent = visible.length;
+}
+
+d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world => {
+  svg.insert('path','*')
+    .datum({type:'Sphere'})
+    .attr('d', path)
+    .attr('fill', isDark ? '#0d1117' : '#D6EAF8')
+    .attr('stroke', isDark ? '#333' : '#A9CCE3')
+    .attr('stroke-width', 0.5);
+
+  svg.insert('path','*')
+    .datum(d3.geoGraticule()())
+    .attr('d', path)
+    .attr('fill','none')
+    .attr('stroke', isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)')
+    .attr('stroke-width', 0.3);
+
+  svg.selectAll('path.land')
+    .data(topojson.feature(world, world.objects.countries).features)
+    .join('path')
+    .attr('class','land')
+    .attr('d', path)
+    .attr('fill', isDark ? '#1e2530' : '#EAF0F6')
+    .attr('stroke', isDark ? '#2a3040' : '#C8D8E8')
+    .attr('stroke-width', 0.3);
+
+  const dotsGroup = svg.append('g').attr('id','dots-group');
+
+  function renderDots() {
+    dotsGroup.selectAll('circle').remove();
+    const filtered = activeFilter === 'all' ? facilities :
+      activeFilter === 'planned' ? facilities.filter(f => f.status === 'planned' || f.status === 'announced') :
+      facilities.filter(f => f.status === activeFilter);
+
+    dotsGroup.selectAll('circle')
+      .data(filtered)
+      .join('circle')
+      .attr('cx', d => projection([d.lng, d.lat])[0])
+      .attr('cy', d => projection([d.lng, d.lat])[1])
+      .attr('r', d => rScale(d.mw))
+      .attr('fill', d => statusColor[d.status] || '#85B7EB')
+      .attr('fill-opacity', 0.82)
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 0.8)
+      .style('cursor','pointer')
+      .on('mousemove', function(event, d) {
+        d3.select(this).attr('stroke-width',2).attr('fill-opacity',1);
+        tip.innerHTML = `<strong style="color:var(--color-text-primary)">${d.name}</strong><br>
+          <span style="color:var(--color-text-secondary)">${d.city}, ${d.country}</span><br>
+          <span style="color:var(--color-text-secondary)">Operator: ${d.operator}</span><br>
+          <span style="color:var(--color-text-secondary)">Type: ${d.type}</span><br>
+          <span style="color:var(--color-text-secondary)">Capacity: ${d.mw >= 1000 ? (d.mw/1000).toFixed(1)+'GW' : d.mw+'MW'}</span><br>
+          <span style="font-weight:500;color:${statusColor[d.status]}">${getStatusLabel(d.status)}</span>`;
+        tip.style.opacity = '1';
+        tip.style.left = (event.clientX + 14) + 'px';
+        tip.style.top = (event.clientY - 40) + 'px';
+      })
+      .on('mouseout', function() {
+        d3.select(this).attr('stroke-width',0.8).attr('fill-opacity',0.82);
+        tip.style.opacity = '0';
+      });
+
+    updateCount();
+  }
+
+  renderDots();
+
+  document.querySelectorAll('.sov-filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.sov-filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      activeFilter = this.dataset.filter;
+      renderDots();
+    });
+  });
+});
+</script>

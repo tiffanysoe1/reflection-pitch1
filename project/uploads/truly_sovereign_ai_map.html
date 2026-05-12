@@ -1,0 +1,277 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+#ctrls{display:flex;flex-wrap:wrap;gap:6px;padding:10px 0 8px}
+.fb{padding:5px 13px;border-radius:20px;border:1.5px solid #ddd;background:#f5f5f5;color:#444;font-size:12px;cursor:pointer}
+.fb.on{background:#1B3A6B;color:#fff;border-color:#1B3A6B}
+#leg{display:flex;gap:16px;padding:4px 0 8px;font-size:12px;color:#444;flex-wrap:wrap;align-items:center}
+.ld{width:13px;height:13px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:4px;border:2.5px solid #fff;box-shadow:0 0 0 2px currentColor}
+#mapwrap{position:relative;width:100%;height:480px;border-radius:10px;overflow:hidden;border:1px solid #bcd}
+#mapwrap svg{position:absolute;inset:0;width:100%;height:100%}
+#panel{position:absolute;top:0;right:0;width:236px;height:100%;background:rgba(255,255,255,0.97);border-left:1px solid #e0e0e0;padding:14px;display:none;flex-direction:column;gap:0;overflow-y:auto;z-index:100}
+#panel.open{display:flex}
+#pcls{align-self:flex-end;font-size:20px;cursor:pointer;color:#bbb;line-height:1;margin-bottom:6px}
+#pname{font-size:13px;font-weight:500;color:#111;line-height:1.4}
+#ploc{font-size:11px;color:#999;margin-top:2px;margin-bottom:8px}
+#pbadge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;margin-bottom:4px}
+#psovbadge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;background:#1B3A6B22;color:#1B3A6B;font-weight:500;margin-bottom:8px}
+.pr{border-top:1px solid #f0f0f0;padding:7px 0 0;margin-top:4px}
+.pl{font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.pv{font-size:12px;color:#333;line-height:1.4}
+#cntbar{font-size:12px;color:#888;padding:2px 0 6px}
+#stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.sc{background:#f7f7f5;border-radius:8px;padding:8px 10px;text-align:center}
+.sn{font-size:18px;font-weight:500;color:#111}
+.sl{font-size:11px;color:#aaa;margin-top:2px}
+#defbox{background:#f0f4f0;border-left:3px solid #1B3A6B;border-radius:0 6px 6px 0;padding:8px 12px;font-size:11px;color:#555;margin-bottom:8px;line-height:1.6}
+</style>
+
+<div id="defbox">
+  <strong style="color:#1B3A6B">Definition used:</strong> Government-owned or directly government-operated facility, where the state controls the compute, the data governance, and the physical infrastructure. Private companies with government funding excluded.
+</div>
+
+<div id="ctrls">
+  <span style="font-size:12px;color:#999;line-height:28px">Status:</span>
+  <button class="fb on" data-f="all">All</button>
+  <button class="fb" data-f="operational">Operational</button>
+  <button class="fb" data-f="construction">Under construction</button>
+  <button class="fb" data-f="planned">Planned</button>
+  <span style="font-size:12px;color:#999;line-height:28px;margin-left:6px">Region:</span>
+  <button class="fb on" data-r="all">All</button>
+  <button class="fb" data-r="us">US</button>
+  <button class="fb" data-r="europe">Europe</button>
+  <button class="fb" data-r="mideast">Middle East</button>
+  <button class="fb" data-r="asia">Asia-Pacific</button>
+  <button class="fb" data-r="latam">Latin America</button>
+  <button class="fb" data-r="other">Africa / Other</button>
+</div>
+
+<div id="leg">
+  <span><span class="ld" style="background:#16a76a;color:#16a76a"></span>Operational</span>
+  <span><span class="ld" style="background:#e09400;color:#e09400"></span>Under construction</span>
+  <span><span class="ld" style="background:#2e7dd4;color:#2e7dd4"></span>Planned</span>
+  <span style="color:#ccc;font-size:11px">· dot size = capacity · click dot for details</span>
+</div>
+
+<div id="cntbar"></div>
+
+<div id="mapwrap">
+  <svg id="thesvg" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="panel">
+    <span id="pcls">&#x2715;</span>
+    <div id="pname"></div>
+    <div id="ploc"></div>
+    <span id="pbadge"></span>
+    <span id="psovbadge">Truly sovereign</span>
+    <div class="pr"><div class="pl">Operator</div><div class="pv" id="pop"></div></div>
+    <div class="pr"><div class="pl">Sovereign basis</div><div class="pv" id="pbasis"></div></div>
+    <div class="pr"><div class="pl">Capacity</div><div class="pv" id="pcap"></div></div>
+    <div class="pr"><div class="pl">Status</div><div class="pv" id="pstat"></div></div>
+    <div class="pr"><div class="pl">Region</div><div class="pv" id="preg"></div></div>
+  </div>
+</div>
+
+<div id="stats">
+  <div class="sc"><div class="sn" id="stn">—</div><div class="sl">Shown</div></div>
+  <div class="sc"><div class="sn">36</div><div class="sl">Total truly sovereign</div></div>
+  <div class="sc"><div class="sn">25+</div><div class="sl">Countries</div></div>
+  <div class="sc"><div class="sn">3</div><div class="sl">US exascale machines</div></div>
+</div>
+<p style="font-size:10px;color:#ccc;margin-top:8px">Sources: DOE (2025–26), EuroHPC JU, CNAS Sovereign AI Index (Jan 2026), SDAIA, Telebras, NSCC Singapore, AIST Japan. Only facilities where a government entity owns and operates the compute are included.</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+const DATA = [
+
+  // ── UNITED STATES — DOE / NNSA National Laboratories ─────────────────
+  // These are federally owned, government-operated. Private hardware partners
+  // supply equipment but the US government owns, operates, and controls access.
+  {n:"Oak Ridge NL — Frontier (DOE OLCF)",loc:"Oak Ridge, TN",lat:35.93,lng:-84.31,mw:1500,s:"operational",
+   op:"US Dept of Energy / ORNL",basis:"Federally owned & operated; DOE Office of Science controls access",r:"us"},
+  {n:"Oak Ridge NL — Lux AI Cluster (DOE)",loc:"Oak Ridge, TN",lat:35.87,lng:-84.25,mw:200,s:"construction",
+   op:"US Dept of Energy / ORNL / AMD",basis:"Public-private build; DOE owns facility & data governance",r:"us"},
+  {n:"Argonne NL — Aurora (DOE ALCF)",loc:"Lemont, IL",lat:41.72,lng:-87.98,mw:600,s:"operational",
+   op:"US Dept of Energy / Argonne NL",basis:"Federally owned & operated; DOE Office of Science",r:"us"},
+  {n:"Argonne NL — Equinox AI Supercomputer",loc:"Lemont, IL",lat:41.76,lng:-87.94,mw:400,s:"construction",
+   op:"US Dept of Energy / Argonne NL",basis:"DOE-owned facility; sovereign AI designation by DOE/Oracle partnership",r:"us"},
+  {n:"Lawrence Livermore NL — El Capitan (NNSA)",loc:"Livermore, CA",lat:37.69,lng:-121.71,mw:600,s:"operational",
+   op:"NNSA / Lawrence Livermore NL",basis:"Classified national security; NNSA-owned & operated, air-gapped",r:"us"},
+  {n:"Los Alamos NL — Venado & Mission (NNSA)",loc:"Los Alamos, NM",lat:35.88,lng:-106.30,mw:500,s:"operational",
+   op:"NNSA / Los Alamos NL",basis:"NNSA-owned; nuclear security & national defence mandate",r:"us"},
+  {n:"Lawrence Berkeley NL — NERSC-10",loc:"Berkeley, CA",lat:37.88,lng:-122.25,mw:200,s:"operational",
+   op:"US Dept of Energy / LBNL",basis:"Federally owned; DOE Office of Science national user facility",r:"us"},
+  {n:"Sandia National Laboratories (NNSA)",loc:"Albuquerque, NM",lat:35.05,lng:-106.54,mw:150,s:"operational",
+   op:"NNSA / Sandia NL",basis:"NNSA-owned; classified nuclear security compute",r:"us"},
+  {n:"DOE Paducah Site — Federal AI Campus",loc:"Paducah, KY",lat:37.06,lng:-88.63,mw:3000,s:"planned",
+   op:"US Dept of Energy",basis:"DOE federal land designation; government-owned site for sovereign AI (DOE RFI 2025)",r:"us"},
+  {n:"DOE Savannah River Site — AI Campus",loc:"Aiken, SC",lat:33.35,lng:-81.74,mw:500,s:"planned",
+   op:"US Dept of Energy",basis:"DOE federal land; government-owned site for sovereign AI (DOE RFI 2025)",r:"us"},
+  {n:"DOE Idaho National Laboratory — AI Site",loc:"Idaho Falls, ID",lat:43.52,lng:-112.03,mw:500,s:"planned",
+   op:"US Dept of Energy / INL",basis:"DOE federal land; government-owned nuclear & AI site",r:"us"},
+
+  // ── EUROPE — EuroHPC Joint Undertaking ───────────────────────────────
+  // EuroHPC JU is an EU body. All EuroHPC supercomputers are publicly owned
+  // by hosting member states and funded by EU + national governments.
+  {n:"LUMI — EuroHPC (Kajaani, Finland)",loc:"Kajaani, Finland",lat:64.22,lng:27.73,mw:17,s:"operational",
+   op:"EuroHPC JU / CSC (Finnish state IT centre)",basis:"EU + Finnish govt owned; hosted by CSC, a Finnish state company",r:"europe"},
+  {n:"MareNostrum 5 — EuroHPC (Barcelona)",loc:"Barcelona, Spain",lat:41.38,lng:2.17,mw:20,s:"operational",
+   op:"EuroHPC JU / BSC (Spanish state)",basis:"EU + Spanish govt owned; Barcelona Supercomputing Centre is state entity",r:"europe"},
+  {n:"CINECA — EuroHPC (Bologna, Italy)",loc:"Bologna, Italy",lat:44.49,lng:11.34,mw:25,s:"operational",
+   op:"EuroHPC JU / CINECA (Italian university consortium)",basis:"EU + Italian govt funded; inter-university consortium under public law",r:"europe"},
+  {n:"JUWELS — EuroHPC / FZJ (Jülich, Germany)",loc:"Jülich, Germany",lat:50.90,lng:6.41,mw:80,s:"operational",
+   op:"EuroHPC JU / Forschungszentrum Jülich",basis:"EU + German federal govt owned; FZJ is a German public research centre",r:"europe"},
+  {n:"MeluXina — EuroHPC (Bissen, Luxembourg)",loc:"Bissen, Luxembourg",lat:49.78,lng:6.07,mw:5,s:"operational",
+   op:"EuroHPC JU / LuxProvide (Luxembourg Govt)",basis:"EU + Luxembourg govt owned; LuxProvide is Luxembourg state entity",r:"europe"},
+  {n:"Sofia Tech Park — EuroHPC (Bulgaria)",loc:"Sofia, Bulgaria",lat:42.68,lng:23.32,mw:10,s:"operational",
+   op:"EuroHPC JU / Sofia Tech Park (Bulgarian state)",basis:"EU + Bulgarian govt owned; Sofia Tech Park is state institution",r:"europe"},
+  {n:"Isambard-AI — UK Research & Innovation",loc:"Bristol, UK",lat:51.45,lng:-2.59,mw:80,s:"operational",
+   op:"UKRI / University of Bristol (public)",basis:"UK govt funded via UKRI; publicly owned national AI research resource",r:"europe"},
+  {n:"Dawn AI Supercomputer — UKRI (Cambridge)",loc:"Cambridge, UK",lat:52.21,lng:0.12,mw:30,s:"operational",
+   op:"UKRI / University of Cambridge (public)",basis:"UK govt funded; UKRI-owned national AI compute resource",r:"europe"},
+  {n:"Jean Zay Supercomputer — IDRIS (France)",loc:"Saclay, France",lat:48.73,lng:2.17,mw:30,s:"operational",
+   op:"CNRS / GENCI (French state)",basis:"Owned by GENCI, a French state organisation; operated by CNRS (state CNRS)",r:"europe"},
+
+  // ── MIDDLE EAST — Government-owned entities ───────────────────────────
+  {n:"SDAIA National AI Centre (Riyadh)",loc:"Riyadh, Saudi Arabia",lat:24.72,lng:46.65,mw:500,s:"operational",
+   op:"SDAIA — Saudi Data & AI Authority",basis:"Saudi royal decree body; government ministry-level AI authority with owned compute",r:"mideast"},
+  {n:"KAUST Supercomputing Core Lab",loc:"Thuwal, Saudi Arabia",lat:22.31,lng:39.10,mw:120,s:"operational",
+   op:"King Abdullah Univ of Science & Technology (state)",basis:"Saudi state university; King Abdullah founded & fully funded by Saudi government",r:"mideast"},
+
+  // ── ASIA-PACIFIC — Government-owned or state-enterprise operated ───────
+  {n:"NSCC Singapore — Aspire 2",loc:"Singapore",lat:1.34,lng:103.82,mw:40,s:"operational",
+   op:"National Supercomputing Centre Singapore (NSCC)",basis:"Singapore govt owned; NSCC is a national facility under NRF & A*STAR",r:"asia"},
+  {n:"AIST Supercomputer ABCI (Japan)",loc:"Kashiwa, Japan",lat:35.89,lng:139.96,mw:60,s:"operational",
+   op:"AIST — National Institute of Advanced Industrial Science & Technology",basis:"Japanese govt owned; AIST is a national research institution under METI",r:"asia"},
+  {n:"RIKEN R-CCS — Fugaku Supercomputer",loc:"Kobe, Japan",lat:34.69,lng:135.22,mw:30,s:"operational",
+   op:"RIKEN / Japanese Govt (MEXT)",basis:"Japanese govt owned; RIKEN is a national research institute; Fugaku is world-class sovereign HPC",r:"asia"},
+  {n:"IndiaAI Mission — C-DAC National AI Hub",loc:"Pune, India",lat:18.52,lng:73.86,mw:150,s:"construction",
+   op:"MeitY / C-DAC (Centre for Development of Advanced Computing)",basis:"Indian central govt; C-DAC is a govt R&D organisation under MeitY",r:"asia"},
+  {n:"KISTI — NURION Supercomputer (South Korea)",loc:"Daejeon, South Korea",lat:36.37,lng:127.38,mw:50,s:"operational",
+   op:"KISTI — Korea Institute of Science & Technology Information",basis:"South Korean govt owned; KISTI is a govt-funded science & technology institute",r:"asia"},
+  {n:"NCHC National Centre for High-performance Computing (Taiwan)",loc:"Hsinchu, Taiwan",lat:24.78,lng:120.99,mw:30,s:"operational",
+   op:"NCHC / National Applied Research Laboratories (Taiwan govt)",basis:"Taiwan govt owned; NCHC is under National Applied Research Labs, a state body",r:"asia"},
+  {n:"NCI Australia — Gadi Supercomputer",loc:"Canberra, Australia",lat:-35.28,lng:149.12,mw:20,s:"operational",
+   op:"NCI Australia (Australian Govt / ANU)",basis:"Australian govt funded; NCI is a national facility for research, owned by ANU under federal mandate",r:"asia"},
+
+  // ── LATIN AMERICA ─────────────────────────────────────────────────────
+  {n:"Telebras National Sovereign Cloud (Brasília)",loc:"Brasília, Brazil",lat:-15.83,lng:-47.86,mw:50,s:"operational",
+   op:"Telebras — Brazilian state telecommunications company",basis:"100% state-owned federal enterprise; designated national sovereign cloud by Brazilian govt",r:"latam"},
+  {n:"SoberanIA Data Vault — Telebras (Brasília)",loc:"Brasília, Brazil",lat:-15.78,lng:-47.93,mw:80,s:"planned",
+   op:"Telebras / Ministry of Science Technology & Innovation (MCTI)",basis:"State-owned operator (Telebras) + govt ministry; sovereign AI national programme",r:"latam"},
+  {n:"LNCC — Santos Dumont Supercomputer (Brazil)",loc:"Petrópolis, Brazil",lat:-22.50,lng:-43.19,mw:15,s:"operational",
+   op:"LNCC — National Scientific Computing Laboratory (Brazilian govt)",basis:"Brazilian federal govt; LNCC is a research unit of MCTI (Ministry of Science)",r:"latam"},
+
+  // ── AFRICA / OTHER ────────────────────────────────────────────────────
+  {n:"Ethiopian AI Institute — National AI DC",loc:"Addis Ababa, Ethiopia",lat:9.02,lng:38.74,mw:15,s:"planned",
+   op:"Ethiopian AI Institute (federal govt body)",basis:"Ethiopian federal government institution established by proclamation",r:"other"},
+  {n:"Kazakhstan Ministry of AI — Astana DC",loc:"Astana, Kazakhstan",lat:51.18,lng:71.45,mw:50,s:"planned",
+   op:"Kazakhstan Ministry of Digital Development & Aerospace Industry",basis:"Kazakh government ministry; state-owned national AI compute",r:"other"},
+];
+
+const COL={operational:"#16a76a",construction:"#e09400",planned:"#2e7dd4"};
+const CLB={operational:"Operational",construction:"Under construction",planned:"Planned / announced"};
+const RNM={us:"United States",europe:"Europe",mideast:"Middle East",asia:"Asia-Pacific",latam:"Latin America",other:"Africa / Other"};
+
+let fS="all",fR="all",activeDot=null;
+
+function rr(mw){
+  if(mw>=3000)return 18;if(mw>=1000)return 14;if(mw>=400)return 11;
+  if(mw>=100)return 9;if(mw>=40)return 7;if(mw>=15)return 6;return 5;
+}
+
+function getFilt(){
+  return DATA.filter(d=>(fS==="all"||d.s===fS)&&(fR==="all"||d.r===fR));
+}
+
+function openPanel(d){
+  document.getElementById("pname").textContent=d.n;
+  document.getElementById("ploc").textContent=d.loc;
+  document.getElementById("pop").textContent=d.op;
+  document.getElementById("pbasis").textContent=d.basis;
+  document.getElementById("pcap").textContent=d.mw>=1000?(d.mw/1000).toFixed(1)+" GW":d.mw+" MW";
+  document.getElementById("pstat").textContent=CLB[d.s];
+  document.getElementById("preg").textContent=RNM[d.r]||d.r;
+  const b=document.getElementById("pbadge");
+  b.textContent=CLB[d.s];
+  b.style.background=COL[d.s]+"22";
+  b.style.color=COL[d.s];
+  document.getElementById("panel").classList.add("open");
+}
+
+document.getElementById("pcls").onclick=function(){
+  document.getElementById("panel").classList.remove("open");
+  if(activeDot){activeDot.attr("stroke","#fff").attr("stroke-width","2.5");activeDot=null;}
+};
+
+const W=900,H=480;
+const svg=d3.select("#thesvg").attr("viewBox",`0 0 ${W} ${H}`);
+const proj=d3.geoNaturalEarth1().scale(145).translate([W/2,H/2+18]);
+const pg=d3.geoPath(proj);
+let dotsG=null;
+
+function render(){
+  if(dotsG)dotsG.remove();
+  const data=getFilt();
+  document.getElementById("cntbar").textContent=`Showing ${data.length} of ${DATA.length} truly sovereign facilities — click any dot for details`;
+  document.getElementById("stn").textContent=data.length;
+  document.getElementById("panel").classList.remove("open");
+  activeDot=null;
+
+  dotsG=svg.append("g");
+
+  data.forEach(d=>{
+    const pos=proj([d.lng,d.lat]);
+    if(!pos||isNaN(pos[0]))return;
+    const [cx,cy]=pos;
+    const R=rr(d.mw);
+    const col=COL[d.s];
+    const g=dotsG.append("g").style("cursor","pointer");
+
+    g.append("circle")
+      .attr("cx",cx).attr("cy",cy).attr("r",R+5)
+      .attr("fill","rgba(255,255,255,0.6)")
+      .attr("stroke","none")
+      .attr("pointer-events","none");
+
+    const dot=g.append("circle")
+      .attr("cx",cx).attr("cy",cy).attr("r",R)
+      .attr("fill",col)
+      .attr("stroke","#fff")
+      .attr("stroke-width","2.5");
+
+    g.on("click",function(e){
+      e.stopPropagation();
+      if(activeDot)activeDot.attr("stroke","#fff").attr("stroke-width","2.5");
+      dot.attr("stroke","#1B3A6B").attr("stroke-width","3.5");
+      activeDot=dot;
+      openPanel(d);
+    })
+    .on("mouseenter",function(){dot.attr("r",R+3);})
+    .on("mouseleave",function(){dot.attr("r",R);});
+  });
+}
+
+d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world=>{
+  svg.append("path").datum({type:"Sphere"}).attr("d",pg)
+    .attr("fill","#c5dcf0").attr("stroke","#9abcd8").attr("stroke-width","1");
+  svg.append("path").datum(d3.geoGraticule()()).attr("d",pg)
+    .attr("fill","none").attr("stroke","rgba(0,0,0,0.05)").attr("stroke-width","0.4");
+  topojson.feature(world,world.objects.countries).features.forEach(f=>{
+    svg.append("path").datum(f).attr("d",pg)
+      .attr("fill","#dde8d8").attr("stroke","#b0c8a8").attr("stroke-width","0.5");
+  });
+  render();
+});
+
+document.querySelectorAll("[data-f]").forEach(b=>b.onclick=function(){
+  fS=this.dataset.f;
+  document.querySelectorAll("[data-f]").forEach(x=>x.classList.toggle("on",x.dataset.f===fS));
+  render();
+});
+document.querySelectorAll("[data-r]").forEach(b=>b.onclick=function(){
+  fR=this.dataset.r;
+  document.querySelectorAll("[data-r]").forEach(x=>x.classList.toggle("on",x.dataset.r===fR));
+  render();
+});
+</script>
