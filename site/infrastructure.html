@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>06 · AI Infrastructure — Reflection AI pitch</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/site.css">
+</head>
+<body data-page="infrastructure" data-screen-label="06 Infrastructure">
+<div id="site-nav"></div>
+
+<main>
+  <header class="page-header">
+    <div class="wrap">
+      <div class="kicker"><span class="page-num">06 / 08</span> AI infrastructure</div>
+      <h1>AI Infrastructure </h1>
+      <p class="lede">Total Cost of Ownership &amp; Sovereign Data Center</p>
+    </div>
+  </header>
+
+  <section class="section section-tight" style="background: var(--color-surface-soft);">
+    <div class="wrap">
+      <div class="caption-uppercase" style="margin-bottom: 16px;">06.1 — Model TCO, a back-of-envelope</div>
+      <h2 style="font-size: 36px; letter-spacing: -0.5px; margin: 0 0 12px; max-width: 24ch;">What a 10k H100 cluster actually costs.</h2>
+      <p style="font-size: 15px; color: var(--color-body); margin: 0 0 32px; max-width: 70ch;">Built from heavy research, cold-calls, and my personal HF network. References pulled from Pytorch to Atoms and SemiAnalysis (2024). Cluster sized at 10,000 H100s — ~40.69% of Meta's 24k H100 reference cluster. Data as of July 2025. </p>
+
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px;">
+        <div class="card">
+          <div class="text-mono" style="font-size: 12px; color: var(--color-primary); margin-bottom: 8px;">4-YR CAPEX</div>
+          <div style="font-size: 36px; letter-spacing: -0.5px; font-weight: 500; margin-bottom: 4px;">$370.4M</div>
+          <p style="margin: 0; font-size: 13px; color: var(--color-body);">Servers, networking, storage. Discounted to <strong>$108.3M</strong> PV at 9.1% WACC (annuity factor 3.21).</p>
+        </div>
+        <div class="card">
+          <div class="text-mono" style="font-size: 12px; color: var(--color-primary); margin-bottom: 8px;">4-YR OPEX</div>
+          <div style="font-size: 36px; letter-spacing: -0.5px; font-weight: 500; margin-bottom: 4px;">$116.6M</div>
+          <p style="margin: 0; font-size: 13px; color: var(--color-body);">Colocation $73.4M + electricity $43.1M. 1.25 PUE, 90% utilization, $0.087 /kWh.</p>
+        </div>
+        <div class="card" style="background: var(--color-ink); color: var(--color-on-dark);">
+          <div class="text-mono" style="font-size: 12px; color: var(--color-on-dark-soft); margin-bottom: 8px;">TOTAL TCO (4 YRS)</div>
+          <div style="font-size: 36px; letter-spacing: -0.5px; font-weight: 500; margin-bottom: 4px; color: #fff;">$595.3M</div>
+          <p style="margin: 0; font-size: 13px; color: var(--color-on-dark-soft);">PV of CapEx + 4 years OpEx. ~$59.5K per GPU over the life of the cluster.</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;">
+        <div>
+          <div class="caption-uppercase" style="margin-bottom: 16px;">CapEx breakdown</div>
+          <div style="font-family: var(--font-mono); font-size: 13px; line-height: 1.9;">
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>H100 GPUs (8× + 4 NVSwitch, 1,250 nodes)</span><span>$243.75M</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>Infiniband networking</span><span>$82.98M</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>Other IT equipment</span><span>$23.01M</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>DDR5 ECC RAM</span><span>$9.83M</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>Intel Xeon Scalable CPUs (2 per node)</span><span>$6.50M</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>Local NVMe</span><span>$4.32M</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; padding-top: 4px; font-weight: 600;"><span>Total CapEx</span><span>$370.38M</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="caption-uppercase" style="margin-bottom: 16px;">OpEx, per month</div>
+          <div style="font-family: var(--font-mono); font-size: 13px; line-height: 1.9;">
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>Colocation ($120/kW · month)</span><span>$1.53M</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>Electricity ($0.087/kWh, 1.25 PUE)</span><span>$898.5K</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; padding-top: 4px; font-weight: 600;"><span>Total OpEx · month</span><span>$2.43M</span></div>
+          </div>
+
+          <div class="caption-uppercase" style="margin: 28px 0 16px;">Key assumptions</div>
+          <div style="font-family: var(--font-mono); font-size: 13px; line-height: 1.9;">
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>Server power (8 GPUs)</span><span>10.2 kW</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>Cluster draw (10k GPUs)</span><span>12.75 MW</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>Utilization</span><span>90%</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto; border-bottom: 1px solid var(--color-hairline);"><span>PUE</span><span>1.25</span></div>
+            <div style="display:grid; grid-template-columns: 1fr auto;"><span>WACC</span><span>9.1%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 40px;">
+        <div class="caption-uppercase" style="margin-bottom: 20px;">Component-level detail — per node × 1,250 nodes</div>
+        <div style="font-family: var(--font-mono); font-size: 13px; line-height: 1.85;">
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; padding-bottom: 6px; border-bottom: 1px solid var(--color-ink); color: var(--color-primary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+            <span>Component</span><span style="text-align:right;">Qty</span><span style="text-align:right;">Unit $</span><span style="text-align:right;">Scaled $</span>
+          </div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>8× H100 + 4× NVSwitch</span><span style="text-align:right;">1,250</span><span style="text-align:right;">$195,000</span><span style="text-align:right;">$243.75M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>Intel Xeon Scalable CPU</span><span style="text-align:right;">2,500</span><span style="text-align:right;">$2,600</span><span style="text-align:right;">$6.50M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>DDR5 ECC RAM</span><span style="text-align:right;">1,250</span><span style="text-align:right;">$7,860</span><span style="text-align:right;">$9.83M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>Local NVMe</span><span style="text-align:right;">1,250</span><span style="text-align:right;">$3,456</span><span style="text-align:right;">$4.32M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>DPU / networking</span><span style="text-align:right;">2,500</span><span style="text-align:right;">$1,908</span><span style="text-align:right;">$4.77M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>Chassis</span><span style="text-align:right;">1,250</span><span style="text-align:right;">$563</span><span style="text-align:right;">$703.8K</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>Motherboard</span><span style="text-align:right;">1,250</span><span style="text-align:right;">$875</span><span style="text-align:right;">$1.09M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>Cooling</span><span style="text-align:right;">1,250</span><span style="text-align:right;">$463</span><span style="text-align:right;">$578.8K</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>Power supply</span><span style="text-align:right;">1,250</span><span style="text-align:right;">$1,200</span><span style="text-align:right;">$1.50M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>Assembly + test + install</span><span style="text-align:right;">1,250</span><span style="text-align:right;">$1,485</span><span style="text-align:right;">$1.86M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>ODM markup + R&amp;D amortized</span><span style="text-align:right;">1,250</span><span style="text-align:right;">$3,000</span><span style="text-align:right;">$3.75M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; padding-top: 16px; padding-bottom: 6px; border-bottom: 1px solid var(--color-ink); color: var(--color-primary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+            <span>Networking fabric</span><span></span><span></span><span></span>
+          </div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>QM9700 IB switch (leaf + spine + superspine)</span><span style="text-align:right;">781</span><span style="text-align:right;">$35,000</span><span style="text-align:right;">$27.34M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>Switch-side twin-port 2×400G transceiver</span><span style="text-align:right;">19,974</span><span style="text-align:right;">$1,300</span><span style="text-align:right;">$25.97M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>ConnectX-7 InfiniBand HCA</span><span style="text-align:right;">10,000</span><span style="text-align:right;">$1,200</span><span style="text-align:right;">$12.00M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>HCA-side 400Gbit IB transceiver</span><span style="text-align:right;">10,000</span><span style="text-align:right;">$1,000</span><span style="text-align:right;">$10.00M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>Misc (OOB networking, rack covers, etc.)</span><span style="text-align:right;">352</span><span style="text-align:right;">$20,000</span><span style="text-align:right;">$7.04M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>In-band mgmt 2×200G Ethernet per row</span><span style="text-align:right;">39</span><span style="text-align:right;">$120,000</span><span style="text-align:right;">$4.68M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>50m multimode IB fiber</span><span style="text-align:right;">29,986</span><span style="text-align:right;">$100</span><span style="text-align:right;">$3.00M</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);"><span>20kW networked PDUs</span><span style="text-align:right;">1,171</span><span style="text-align:right;">$800</span><span style="text-align:right;">$936.8K</span></div>
+          <div style="display:grid; grid-template-columns: 2.4fr 0.6fr 1fr 1fr; gap: 16px;"><span>42U racks</span><span style="text-align:right;">390</span><span style="text-align:right;">$2,000</span><span style="text-align:right;">$780.0K</span></div>
+        </div>
+      </div>
+
+      <div class="sidenote" style="margin-top: 32px;">CAVEAT: I obtained the template from the Substack Pytorch to Atoms, which models an on-premises TCO for ~24k-GPU clusters. I then performed a pro-rata, line-by-line recalculation for 10,000-GPU clusters and updated several assumptions based on data from SemiAnalysis.</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="caption-uppercase" style="margin-bottom: 16px;">06.2 — Chip-by-chip TCO, the frontier accelerators</div>
+      <h2 style="font-size: 36px; letter-spacing: -0.5px; margin: 0 0 12px; max-width: 26ch;">What an hour of compute actually costs in 2025.</h2>
+      <p style="font-size: 15px; color: var(--color-body); margin: 0 0 32px; max-width: 70ch;">Source: SemiAnalysis, 28 Nov 2025. TPU v7 split between internal Google workloads and external neocloud rental. All $/hour figures are fully loaded — capex amortization plus opex, weighted by the marketed utilization profile.</p>
+
+      <div style="font-family: var(--font-mono); font-size: 13px; line-height: 1.85; overflow-x: auto;">
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; padding-bottom: 6px; border-bottom: 1px solid var(--color-ink); color: var(--color-primary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+          <span>Chip</span>
+          <span style="text-align:right;">GB200</span>
+          <span style="text-align:right;">GB300</span>
+          <span style="text-align:right;">TPU v7 (Internal)</span>
+          <span style="text-align:right;">TPU v7 (External)</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline); color: var(--color-body);">
+          <span>Customer profile</span>
+          <span style="text-align:right;">Hyperscaler</span>
+          <span style="text-align:right;">Hyperscaler</span>
+          <span style="text-align:right;">Hyperscaler</span>
+          <span style="text-align:right;">Neocloud</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Total cost per unit-hour <span style="color: var(--color-body);">($/GPU/hr)</span></span>
+          <span style="text-align:right;">2.28</span>
+          <span style="text-align:right;">2.73</span>
+          <span style="text-align:right;">1.28</span>
+          <span style="text-align:right;">1.60</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Capital cost as % of TCO</span>
+          <span style="text-align:right;">77.4%</span>
+          <span style="text-align:right;">79.0%</span>
+          <span style="text-align:right;">72.7%</span>
+          <span style="text-align:right;">72.7%</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; padding-top: 16px; padding-bottom: 6px; border-bottom: 1px solid var(--color-ink); color: var(--color-primary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+          <span>Marketed performance</span><span></span><span></span><span></span><span></span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>BF16 <span style="color: var(--color-body);">(TFLOPS)</span></span>
+          <span style="text-align:right;">2,500</span>
+          <span style="text-align:right;">2,500</span>
+          <span style="text-align:right;">2,307</span>
+          <span style="text-align:right;">2,307</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>8-bit <span style="color: var(--color-body);">(TFLOPS)</span></span>
+          <span style="text-align:right;">5,000</span>
+          <span style="text-align:right;">5,000</span>
+          <span style="text-align:right;">4,614</span>
+          <span style="text-align:right;">4,614</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>FP4 <span style="color: var(--color-body);">(TFLOPS)</span></span>
+          <span style="text-align:right;">10,000</span>
+          <span style="text-align:right;">15,000</span>
+          <span style="text-align:right;">4,614</span>
+          <span style="text-align:right;">4,614</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Memory bandwidth / logical GPU <span style="color: var(--color-body);">(TB/s)</span></span>
+          <span style="text-align:right;">8.0</span>
+          <span style="text-align:right;">8.0</span>
+          <span style="text-align:right;">7.6</span>
+          <span style="text-align:right;">7.6</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Memory capacity <span style="color: var(--color-body);">(GB)</span></span>
+          <span style="text-align:right;">192</span>
+          <span style="text-align:right;">288</span>
+          <span style="text-align:right;">16</span>
+          <span style="text-align:right;">32</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>FP8 TFLOPS per TB/s bandwidth</span>
+          <span style="text-align:right;">625</span>
+          <span style="text-align:right;">625</span>
+          <span style="text-align:right;">609</span>
+          <span style="text-align:right;">609</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; padding-top: 16px; padding-bottom: 6px; border-bottom: 1px solid var(--color-ink); color: var(--color-primary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+          <span>TCO per unit of work <span style="text-transform: none; letter-spacing: 0; color: var(--color-body);">($/hr per PFLOP, dense)</span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>BF16 dense</span>
+          <span style="text-align:right;">0.91</span>
+          <span style="text-align:right;">1.09</span>
+          <span style="text-align:right;">0.56</span>
+          <span style="text-align:right;">0.69</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>8-bit dense</span>
+          <span style="text-align:right;">0.46</span>
+          <span style="text-align:right;">0.55</span>
+          <span style="text-align:right;">0.28</span>
+          <span style="text-align:right;">0.35</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>FP4 dense</span>
+          <span style="text-align:right;">0.23</span>
+          <span style="text-align:right;">0.18</span>
+          <span style="text-align:right;">0.28</span>
+          <span style="text-align:right;">0.35</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Memory bandwidth <span style="color: var(--color-body);">($/hr per TB/s)</span></span>
+          <span style="text-align:right;">0.28</span>
+          <span style="text-align:right;">0.34</span>
+          <span style="text-align:right;">0.17</span>
+          <span style="text-align:right;">0.21</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.4fr repeat(4, 1fr); gap: 16px;">
+          <span>Memory capacity <span style="color: var(--color-body);">($/hr per TB)</span></span>
+          <span style="text-align:right;">11.87</span>
+          <span style="text-align:right;">9.47</span>
+          <span style="text-align:right;">6.67</span>
+          <span style="text-align:right;">8.33</span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px;">
+        <div class="card">
+          <div class="text-mono" style="font-size: 12px; color: var(--color-primary); margin-bottom: 8px;">FP4 WINNER</div>
+          <div style="font-size: 32px; letter-spacing: -0.5px; font-weight: 500; margin-bottom: 4px;">GB300</div>
+          <p style="margin: 0; font-size: 13px; color: var(--color-body);">$0.18 / hr per FP4 PFLOP — the cheapest dense throughput on the market, narrowly beating TPU v7 internal at $0.28.</p>
+        </div>
+        <div class="card">
+          <div class="text-mono" style="font-size: 12px; color: var(--color-primary); margin-bottom: 8px;">BF16 / 8-BIT WINNER</div>
+          <div style="font-size: 32px; letter-spacing: -0.5px; font-weight: 500; margin-bottom: 4px;">TPU v7</div>
+          <p style="margin: 0; font-size: 13px; color: var(--color-body);">Internal Google workloads land at $0.56 / hr per BF16 PFLOP — 38% cheaper than GB200, 49% cheaper than GB300.</p>
+        </div>
+        <div class="card" style="background: var(--color-ink); color: var(--color-on-dark);">
+          <div class="text-mono" style="font-size: 12px; color: var(--color-on-dark-soft); margin-bottom: 8px;">THE CATCH</div>
+          <div style="font-size: 32px; letter-spacing: -0.5px; font-weight: 500; margin-bottom: 4px; color: #fff;">16 GB</div>
+          <p style="margin: 0; font-size: 13px; color: var(--color-on-dark-soft);">TPU v7 internal carries 16 GB per logical GPU vs. 288 GB on GB300. Different chip, different workload, different scaling story.</p>
+        </div>
+      </div>
+
+      <div class="sidenote" style="margin-top: 32px;">READING THE TABLE:
+GB300 wins FP4 because Nvidia doubled FP4 throughput generation-over-generation while holding bandwidth and capacity flat — so the FP4 line is essentially a software unlock on the same silicon. TPU v7's external pricing (neocloud) carries a 25% markup vs. internal, which is the floor of what Google is willing to give up to seed external demand.</div>
+    </div>
+  </section>
+
+  <section class="section section-tight" style="background: var(--color-surface-soft);">
+    <div class="wrap">
+      <div class="caption-uppercase" style="margin-bottom: 16px;">06.3 — A 1 GW factory, two ways</div>
+      <h2 style="font-size: 36px; letter-spacing: -0.5px; margin: 0 0 12px; max-width: 26ch;">Who actually pays for the gigawatt.</h2>
+      <p style="font-size: 15px; color: var(--color-body); margin: 0 0 32px; max-width: 70ch;">Source: SemiAnalysis, 28 Nov 2025. Two announced 1 GW build-outs — OpenAI's with Nvidia, and Anthropic's with Nvidia + Microsoft. Same headline cost, very different cap table once you net out vendor financing and equity rebates.</p>
+
+      <div style="font-family: var(--font-mono); font-size: 13px; line-height: 1.95;">
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; padding-bottom: 6px; border-bottom: 1px solid var(--color-ink); color: var(--color-primary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+          <span>Line item</span>
+          <span style="text-align:right;">Unit</span>
+          <span style="text-align:right;">OpenAI · NVDA</span>
+          <span style="text-align:right;">Anthropic · NVDA · MSFT</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; padding-top: 14px; padding-bottom: 6px; color: var(--color-primary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+          <span>Critical IT content</span><span></span><span></span><span></span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Nvidia GPUs</span>
+          <span style="text-align:right; color: var(--color-body);">$B / GW</span>
+          <span style="text-align:right;">$22</span>
+          <span style="text-align:right;">$22</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Rest of system <span style="color: var(--color-body);">(InfiniBand, storage, etc.)</span></span>
+          <span style="text-align:right; color: var(--color-body);">$B / GW</span>
+          <span style="text-align:right;">$12</span>
+          <span style="text-align:right;">$12</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-ink); font-weight: 600;">
+          <span>Critical IT content, subtotal</span>
+          <span style="text-align:right; color: var(--color-body); font-weight: 400;">$B / GW</span>
+          <span style="text-align:right;">$34</span>
+          <span style="text-align:right;">$34</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Total announced cost</span>
+          <span style="text-align:right; color: var(--color-body);">$B / GW</span>
+          <span style="text-align:right;">$68</span>
+          <span style="text-align:right;">$68</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; padding-top: 18px; padding-bottom: 6px; color: var(--color-primary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+          <span>Vendor financing &amp; rebates</span><span></span><span></span><span></span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Nvidia investment</span>
+          <span style="text-align:right; color: var(--color-body);">$B / GW</span>
+          <span style="text-align:right;">$10</span>
+          <span style="text-align:right;">$5</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--color-hairline);">
+          <span>Microsoft equity rebate</span>
+          <span style="text-align:right; color: var(--color-body);">$B / GW</span>
+          <span style="text-align:right;">$0</span>
+          <span style="text-align:right;">$10</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 2.6fr 1fr 1fr 1fr; gap: 16px; padding-top: 4px; font-weight: 600;">
+          <span>Effective partner discount<span style="color: var(--color-body); font-weight: 400;"> *****</span></span>
+          <span style="text-align:right; color: var(--color-body); font-weight: 400;">%</span>
+          <span style="text-align:right;">29%</span>
+          <span style="text-align:right;">44%</span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px;">
+        <div class="card">
+          <div class="text-mono" style="font-size: 12px; color: var(--color-primary); margin-bottom: 8px;">OPENAI · NVDA</div>
+          <div style="display:flex; align-items: baseline; gap: 12px; margin-bottom: 8px;">
+            <div style="font-size: 40px; letter-spacing: -0.5px; font-weight: 500;">$58B</div>
+            <div style="font-size: 13px; color: var(--color-body);">net cost / GW</div>
+          </div>
+          <p style="margin: 0; font-size: 14px;">$68B announced minus $10B Nvidia investment. Nvidia takes equity in the customer it sells to — the discount is paid in OpenAI shares, not cash.</p>
+        </div>
+        <div class="card" style="background: var(--color-ink); color: var(--color-on-dark);">
+          <div class="text-mono" style="font-size: 12px; color: var(--color-on-dark-soft); margin-bottom: 8px;">ANTHROPIC · NVDA · MSFT</div>
+          <div style="display:flex; align-items: baseline; gap: 12px; margin-bottom: 8px;">
+            <div style="font-size: 40px; letter-spacing: -0.5px; font-weight: 500; color: #fff;">$53B</div>
+            <div style="font-size: 13px; color: var(--color-on-dark-soft);">net cost / GW</div>
+          </div>
+          <p style="margin: 0; font-size: 14px; color: var(--color-on-dark-soft);">$68B announced minus $5B Nvidia investment minus $10B Microsoft equity rebate. Two vendor balance sheets sharing the bill — 15 points better than the OpenAI structure.</p>
+        </div>
+      </div>
+
+      <div class="sidenote" style="margin-top: 32px;">***** CAVEAT: Had a conversation with a GDM product manager who said these estimates are too expensive. He asserted that it is a multiplayer game, that everyone holds different information. Consensus among Dario, GDM &amp; Mustafa is that OpenAI is very risk-taking in compute.</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="caption-uppercase" style="margin-bottom: 24px;">06.4 — Sovereign AI data centers, mapped</div>
+      <h3 style="font-size: 24px; letter-spacing: -0.3px; margin: 0 0 12px; max-width: 60ch;">Where state-backed compute is actually being built</h3>
+      <p style="font-size: 16px; line-height: 1.6; color: var(--color-body); max-width: 60ch; margin: 0 0 28px;">Only facilities a government actually owns and operates &mdash; the compute, the data governance, the physical site. Private companies receiving state subsidies don&rsquo;t count.</p>
+
+      <div id="tsov">
+        <div class="tsov-def">
+          <strong>Definition used.</strong> Government-owned or directly government-operated facility, where the state controls the compute, the data governance, and the physical infrastructure. Private companies with government funding are excluded.
+        </div>
+
+        <div id="tsov-ctrls">
+          <span class="tsov-lbl">Status</span>
+          <button class="tsov-btn on" data-f="all">All</button>
+          <button class="tsov-btn" data-f="operational">Operational</button>
+          <button class="tsov-btn" data-f="construction">Under construction</button>
+          <button class="tsov-btn" data-f="planned">Planned</button>
+          <span class="tsov-lbl" style="margin-left: 12px;">Region</span>
+          <button class="tsov-btn on" data-r="all">All</button>
+          <button class="tsov-btn" data-r="us">US</button>
+          <button class="tsov-btn" data-r="europe">Europe</button>
+          <button class="tsov-btn" data-r="mideast">Middle East</button>
+          <button class="tsov-btn" data-r="asia">Asia-Pacific</button>
+          <button class="tsov-btn" data-r="latam">Latin America</button>
+          <button class="tsov-btn" data-r="other">Africa / Other</button>
+        </div>
+
+        <div id="tsov-leg">
+          <span><span class="ld" style="background:#1E5C2E;"></span>Operational</span>
+          <span><span class="ld" style="background:#E8A55A;"></span>Under construction</span>
+          <span><span class="ld" style="background:#5DB8A6;"></span>Planned / announced</span>
+          <span class="tsov-leg-meta">&middot; dot size = capacity &middot; click for details</span>
+        </div>
+
+        <div id="tsov-cnt"></div>
+
+        <div id="tsov-mapwrap">
+          <svg id="tsov-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div id="tsov-panel">
+            <span id="tsov-pcls">&#x2715;</span>
+            <div id="tsov-pname"></div>
+            <div id="tsov-ploc"></div>
+            <span id="tsov-pbadge"></span>
+            <span id="tsov-psovbadge">Truly sovereign</span>
+            <div class="pr"><div class="pl">Operator</div><div class="pv" id="tsov-pop"></div></div>
+            <div class="pr"><div class="pl">Sovereign basis</div><div class="pv" id="tsov-pbasis"></div></div>
+            <div class="pr"><div class="pl">Capacity</div><div class="pv" id="tsov-pcap"></div></div>
+            <div class="pr"><div class="pl">Status</div><div class="pv" id="tsov-pstat"></div></div>
+            <div class="pr"><div class="pl">Region</div><div class="pv" id="tsov-preg"></div></div>
+          </div>
+        </div>
+
+        <div id="tsov-stats">
+          <div class="sc"><div class="sn" id="tsov-stn">&mdash;</div><div class="sl">Shown</div></div>
+          <div class="sc"><div class="sn">36</div><div class="sl">Total truly sovereign</div></div>
+          <div class="sc"><div class="sn">25+</div><div class="sl">Countries</div></div>
+          <div class="sc"><div class="sn">3</div><div class="sl">US exascale machines</div></div>
+        </div>
+
+        <p class="tsov-src">Sources: DOE (2025&ndash;26), EuroHPC JU, CNAS Sovereign AI Index (Jan 2026), SDAIA, Telebras, NSCC Singapore, AIST Japan. Only facilities where a government entity owns and operates the compute are included. I used Claude to generate this.</p>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    #tsov { color: var(--color-ink); }
+    #tsov .tsov-def {
+      background: var(--color-surface-soft);
+      border-left: 3px solid var(--color-primary);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--color-body);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      max-width: 70ch;
+    }
+    #tsov .tsov-def strong { color: var(--color-primary); font-weight: 600; }
+    #tsov-ctrls {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      align-items: center;
+      padding: 6px 0;
+    }
+    #tsov .tsov-lbl {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-right: 4px;
+    }
+    #tsov .tsov-btn {
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--color-hairline);
+      background: var(--color-surface-soft);
+      color: var(--color-body-strong);
+      cursor: pointer;
+      font-family: var(--font-body);
+      letter-spacing: 0.2px;
+    }
+    #tsov .tsov-btn.on {
+      background: var(--color-primary); color: #fff; border-color: var(--color-primary);
+    }
+    #tsov-leg {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      padding: 8px 0;
+      font-size: 12px;
+      color: var(--color-body);
+      align-items: center;
+    }
+    #tsov-leg .ld {
+      width: 11px; height: 11px; border-radius: 50%;
+      display: inline-block; vertical-align: middle; margin-right: 6px;
+    }
+    #tsov-leg .tsov-leg-meta {
+      color: var(--color-muted);
+      font-size: 11px;
+    }
+    #tsov-cnt {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin: 4px 0 12px;
+    }
+    #tsov-mapwrap {
+      position: relative; width: 100%; height: 520px;
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid var(--color-hairline);
+      background: var(--color-surface-soft);
+    }
+    #tsov-mapwrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #tsov-panel {
+      position: absolute; top: 0; right: 0;
+      width: 260px; height: 100%;
+      background: var(--color-canvas);
+      border-left: 1px solid var(--color-hairline);
+      padding: 18px 18px 24px;
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      overflow-y: auto;
+      z-index: 10;
+      box-shadow: -4px 0 16px rgba(0,0,0,0.06);
+    }
+    #tsov-panel.open { display: flex; }
+    #tsov-pcls {
+      align-self: flex-end;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--color-muted);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    #tsov-pname {
+      font-size: 14px; font-weight: 500;
+      color: var(--color-ink); line-height: 1.4;
+    }
+    #tsov-ploc {
+      font-size: 11px; color: var(--color-muted);
+      margin: 2px 0 10px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.4px;
+    }
+    #tsov-pbadge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 20px; font-size: 11px; font-weight: 500;
+      margin-bottom: 6px;
+    }
+    #tsov-psovbadge {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 20px; font-size: 10px;
+      background: rgba(30,92,46,0.12);
+      color: var(--color-primary);
+      font-weight: 500;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+    #tsov-panel .pr {
+      border-top: 1px solid var(--color-hairline);
+      padding: 9px 0 0; margin-top: 6px;
+    }
+    #tsov-panel .pl {
+      font-size: 10px; color: var(--color-muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 3px;
+      font-family: var(--font-mono);
+    }
+    #tsov-panel .pv {
+      font-size: 12px; color: var(--color-body-strong);
+      line-height: 1.5;
+    }
+    #tsov-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+      margin-top: 16px;
+    }
+    #tsov-stats .sc {
+      background: var(--color-surface-soft);
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    #tsov-stats .sn {
+      font-size: 24px; font-weight: 500;
+      color: var(--color-ink);
+      letter-spacing: -0.4px;
+      line-height: 1.1;
+    }
+    #tsov-stats .sl {
+      font-size: 11px; color: var(--color-muted);
+      margin-top: 4px; line-height: 1.4;
+    }
+    #tsov .tsov-src {
+      font-size: 12px; color: var(--color-muted);
+      margin-top: 24px; line-height: 1.5;
+      max-width: 70ch;
+    }
+    @media (max-width: 720px) {
+      #tsov-stats { grid-template-columns: repeat(2, 1fr); }
+      #tsov-panel { width: 100%; }
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+  <script>
+  (function(){
+    const DATA = [
+      {n:"Oak Ridge NL — Frontier (DOE OLCF)",loc:"Oak Ridge, TN",lat:35.93,lng:-84.31,mw:1500,s:"operational",op:"US Dept of Energy / ORNL",basis:"Federally owned & operated; DOE Office of Science controls access",r:"us"},
+      {n:"Oak Ridge NL — Lux AI Cluster (DOE)",loc:"Oak Ridge, TN",lat:35.87,lng:-84.25,mw:200,s:"construction",op:"US Dept of Energy / ORNL / AMD",basis:"Public-private build; DOE owns facility & data governance",r:"us"},
+      {n:"Argonne NL — Aurora (DOE ALCF)",loc:"Lemont, IL",lat:41.72,lng:-87.98,mw:600,s:"operational",op:"US Dept of Energy / Argonne NL",basis:"Federally owned & operated; DOE Office of Science",r:"us"},
+      {n:"Argonne NL — Equinox AI Supercomputer",loc:"Lemont, IL",lat:41.76,lng:-87.94,mw:400,s:"construction",op:"US Dept of Energy / Argonne NL",basis:"DOE-owned facility; sovereign AI designation by DOE/Oracle partnership",r:"us"},
+      {n:"Lawrence Livermore NL — El Capitan (NNSA)",loc:"Livermore, CA",lat:37.69,lng:-121.71,mw:600,s:"operational",op:"NNSA / Lawrence Livermore NL",basis:"Classified national security; NNSA-owned & operated, air-gapped",r:"us"},
+      {n:"Los Alamos NL — Venado & Mission (NNSA)",loc:"Los Alamos, NM",lat:35.88,lng:-106.30,mw:500,s:"operational",op:"NNSA / Los Alamos NL",basis:"NNSA-owned; nuclear security & national defence mandate",r:"us"},
+      {n:"Lawrence Berkeley NL — NERSC-10",loc:"Berkeley, CA",lat:37.88,lng:-122.25,mw:200,s:"operational",op:"US Dept of Energy / LBNL",basis:"Federally owned; DOE Office of Science national user facility",r:"us"},
+      {n:"Sandia National Laboratories (NNSA)",loc:"Albuquerque, NM",lat:35.05,lng:-106.54,mw:150,s:"operational",op:"NNSA / Sandia NL",basis:"NNSA-owned; classified nuclear security compute",r:"us"},
+      {n:"DOE Paducah Site — Federal AI Campus",loc:"Paducah, KY",lat:37.06,lng:-88.63,mw:3000,s:"planned",op:"US Dept of Energy",basis:"DOE federal land designation; government-owned site for sovereign AI (DOE RFI 2025)",r:"us"},
+      {n:"DOE Savannah River Site — AI Campus",loc:"Aiken, SC",lat:33.35,lng:-81.74,mw:500,s:"planned",op:"US Dept of Energy",basis:"DOE federal land; government-owned site for sovereign AI (DOE RFI 2025)",r:"us"},
+      {n:"DOE Idaho National Laboratory — AI Site",loc:"Idaho Falls, ID",lat:43.52,lng:-112.03,mw:500,s:"planned",op:"US Dept of Energy / INL",basis:"DOE federal land; government-owned nuclear & AI site",r:"us"},
+      {n:"LUMI — EuroHPC (Kajaani, Finland)",loc:"Kajaani, Finland",lat:64.22,lng:27.73,mw:17,s:"operational",op:"EuroHPC JU / CSC (Finnish state IT centre)",basis:"EU + Finnish govt owned; hosted by CSC, a Finnish state company",r:"europe"},
+      {n:"MareNostrum 5 — EuroHPC (Barcelona)",loc:"Barcelona, Spain",lat:41.38,lng:2.17,mw:20,s:"operational",op:"EuroHPC JU / BSC (Spanish state)",basis:"EU + Spanish govt owned; Barcelona Supercomputing Centre is state entity",r:"europe"},
+      {n:"CINECA — EuroHPC (Bologna, Italy)",loc:"Bologna, Italy",lat:44.49,lng:11.34,mw:25,s:"operational",op:"EuroHPC JU / CINECA (Italian university consortium)",basis:"EU + Italian govt funded; inter-university consortium under public law",r:"europe"},
+      {n:"JUWELS — EuroHPC / FZJ (Jülich, Germany)",loc:"Jülich, Germany",lat:50.90,lng:6.41,mw:80,s:"operational",op:"EuroHPC JU / Forschungszentrum Jülich",basis:"EU + German federal govt owned; FZJ is a German public research centre",r:"europe"},
+      {n:"MeluXina — EuroHPC (Bissen, Luxembourg)",loc:"Bissen, Luxembourg",lat:49.78,lng:6.07,mw:5,s:"operational",op:"EuroHPC JU / LuxProvide (Luxembourg Govt)",basis:"EU + Luxembourg govt owned; LuxProvide is Luxembourg state entity",r:"europe"},
+      {n:"Sofia Tech Park — EuroHPC (Bulgaria)",loc:"Sofia, Bulgaria",lat:42.68,lng:23.32,mw:10,s:"operational",op:"EuroHPC JU / Sofia Tech Park (Bulgarian state)",basis:"EU + Bulgarian govt owned; Sofia Tech Park is state institution",r:"europe"},
+      {n:"Isambard-AI — UK Research & Innovation",loc:"Bristol, UK",lat:51.45,lng:-2.59,mw:80,s:"operational",op:"UKRI / University of Bristol (public)",basis:"UK govt funded via UKRI; publicly owned national AI research resource",r:"europe"},
+      {n:"Dawn AI Supercomputer — UKRI (Cambridge)",loc:"Cambridge, UK",lat:52.21,lng:0.12,mw:30,s:"operational",op:"UKRI / University of Cambridge (public)",basis:"UK govt funded; UKRI-owned national AI compute resource",r:"europe"},
+      {n:"Jean Zay Supercomputer — IDRIS (France)",loc:"Saclay, France",lat:48.73,lng:2.17,mw:30,s:"operational",op:"CNRS / GENCI (French state)",basis:"Owned by GENCI, a French state organisation; operated by CNRS (state CNRS)",r:"europe"},
+      {n:"SDAIA National AI Centre (Riyadh)",loc:"Riyadh, Saudi Arabia",lat:24.72,lng:46.65,mw:500,s:"operational",op:"SDAIA — Saudi Data & AI Authority",basis:"Saudi royal decree body; government ministry-level AI authority with owned compute",r:"mideast"},
+      {n:"KAUST Supercomputing Core Lab",loc:"Thuwal, Saudi Arabia",lat:22.31,lng:39.10,mw:120,s:"operational",op:"King Abdullah Univ of Science & Technology (state)",basis:"Saudi state university; King Abdullah founded & fully funded by Saudi government",r:"mideast"},
+      {n:"NSCC Singapore — Aspire 2",loc:"Singapore",lat:1.34,lng:103.82,mw:40,s:"operational",op:"National Supercomputing Centre Singapore (NSCC)",basis:"Singapore govt owned; NSCC is a national facility under NRF & A*STAR",r:"asia"},
+      {n:"AIST Supercomputer ABCI (Japan)",loc:"Kashiwa, Japan",lat:35.89,lng:139.96,mw:60,s:"operational",op:"AIST — National Institute of Advanced Industrial Science & Technology",basis:"Japanese govt owned; AIST is a national research institution under METI",r:"asia"},
+      {n:"RIKEN R-CCS — Fugaku Supercomputer",loc:"Kobe, Japan",lat:34.69,lng:135.22,mw:30,s:"operational",op:"RIKEN / Japanese Govt (MEXT)",basis:"Japanese govt owned; RIKEN is a national research institute; Fugaku is world-class sovereign HPC",r:"asia"},
+      {n:"IndiaAI Mission — C-DAC National AI Hub",loc:"Pune, India",lat:18.52,lng:73.86,mw:150,s:"construction",op:"MeitY / C-DAC (Centre for Development of Advanced Computing)",basis:"Indian central govt; C-DAC is a govt R&D organisation under MeitY",r:"asia"},
+      {n:"KISTI — NURION Supercomputer (South Korea)",loc:"Daejeon, South Korea",lat:36.37,lng:127.38,mw:50,s:"operational",op:"KISTI — Korea Institute of Science & Technology Information",basis:"South Korean govt owned; KISTI is a govt-funded science & technology institute",r:"asia"},
+      {n:"NCHC National Centre for HPC (Taiwan)",loc:"Hsinchu, Taiwan",lat:24.78,lng:120.99,mw:30,s:"operational",op:"NCHC / National Applied Research Laboratories (Taiwan govt)",basis:"Taiwan govt owned; NCHC is under National Applied Research Labs, a state body",r:"asia"},
+      {n:"NCI Australia — Gadi Supercomputer",loc:"Canberra, Australia",lat:-35.28,lng:149.12,mw:20,s:"operational",op:"NCI Australia (Australian Govt / ANU)",basis:"Australian govt funded; NCI is a national facility for research, owned by ANU under federal mandate",r:"asia"},
+      {n:"Telebras National Sovereign Cloud (Brasília)",loc:"Brasília, Brazil",lat:-15.83,lng:-47.86,mw:50,s:"operational",op:"Telebras — Brazilian state telecommunications company",basis:"100% state-owned federal enterprise; designated national sovereign cloud by Brazilian govt",r:"latam"},
+      {n:"SoberanIA Data Vault — Telebras (Brasília)",loc:"Brasília, Brazil",lat:-15.78,lng:-47.93,mw:80,s:"planned",op:"Telebras / Ministry of Science Technology & Innovation (MCTI)",basis:"State-owned operator (Telebras) + govt ministry; sovereign AI national programme",r:"latam"},
+      {n:"LNCC — Santos Dumont Supercomputer (Brazil)",loc:"Petrópolis, Brazil",lat:-22.50,lng:-43.19,mw:15,s:"operational",op:"LNCC — National Scientific Computing Laboratory (Brazilian govt)",basis:"Brazilian federal govt; LNCC is a research unit of MCTI (Ministry of Science)",r:"latam"},
+      {n:"Ethiopian AI Institute — National AI DC",loc:"Addis Ababa, Ethiopia",lat:9.02,lng:38.74,mw:15,s:"planned",op:"Ethiopian AI Institute (federal govt body)",basis:"Ethiopian federal government institution established by proclamation",r:"other"},
+      {n:"Kazakhstan Ministry of AI — Astana DC",loc:"Astana, Kazakhstan",lat:51.18,lng:71.45,mw:50,s:"planned",op:"Kazakhstan Ministry of Digital Development & Aerospace Industry",basis:"Kazakh government ministry; state-owned national AI compute",r:"other"},
+    ];
+    const COL = { operational: "#1E5C2E", construction: "#E8A55A", planned: "#5DB8A6" };
+    const CLB = { operational: "Operational", construction: "Under construction", planned: "Planned / announced" };
+    const RNM = { us: "United States", europe: "Europe", mideast: "Middle East", asia: "Asia-Pacific", latam: "Latin America", other: "Africa / Other" };
+    let fS = "all", fR = "all", activeDot = null;
+
+    function rr(mw){
+      if(mw>=3000)return 18;if(mw>=1000)return 14;if(mw>=400)return 11;
+      if(mw>=100)return 9;if(mw>=40)return 7;if(mw>=15)return 6;return 5;
+    }
+    function getFilt(){
+      return DATA.filter(d => (fS==="all"||d.s===fS) && (fR==="all"||d.r===fR));
+    }
+    function openPanel(d){
+      document.getElementById("tsov-pname").textContent = d.n;
+      document.getElementById("tsov-ploc").textContent = d.loc;
+      document.getElementById("tsov-pop").textContent = d.op;
+      document.getElementById("tsov-pbasis").textContent = d.basis;
+      document.getElementById("tsov-pcap").textContent = d.mw>=1000 ? (d.mw/1000).toFixed(1)+" GW" : d.mw+" MW";
+      document.getElementById("tsov-pstat").textContent = CLB[d.s];
+      document.getElementById("tsov-preg").textContent = RNM[d.r] || d.r;
+      const b = document.getElementById("tsov-pbadge");
+      b.textContent = CLB[d.s];
+      b.style.background = COL[d.s] + "22";
+      b.style.color = COL[d.s];
+      document.getElementById("tsov-panel").classList.add("open");
+    }
+    document.getElementById("tsov-pcls").onclick = function(){
+      document.getElementById("tsov-panel").classList.remove("open");
+      if(activeDot){ activeDot.attr("stroke","#fff").attr("stroke-width","2.5"); activeDot=null; }
+    };
+
+    const W = 900, H = 520;
+    const svg = d3.select("#tsov-svg").attr("viewBox", `0 0 ${W} ${H}`);
+    const proj = d3.geoNaturalEarth1().scale(155).translate([W/2, H/2 + 18]);
+    const pg = d3.geoPath(proj);
+    let dotsG = null;
+
+    function render(){
+      if(dotsG) dotsG.remove();
+      const data = getFilt();
+      document.getElementById("tsov-cnt").textContent = `Showing ${data.length} of ${DATA.length} truly sovereign facilities`;
+      document.getElementById("tsov-stn").textContent = data.length;
+      document.getElementById("tsov-panel").classList.remove("open");
+      activeDot = null;
+      dotsG = svg.append("g");
+      data.forEach(d => {
+        const pos = proj([d.lng, d.lat]);
+        if(!pos || isNaN(pos[0])) return;
+        const [cx, cy] = pos;
+        const R = rr(d.mw);
+        const col = COL[d.s];
+        const g = dotsG.append("g").style("cursor","pointer");
+        g.append("circle")
+          .attr("cx",cx).attr("cy",cy).attr("r",R+5)
+          .attr("fill","rgba(255,255,255,0.6)")
+          .attr("stroke","none")
+          .attr("pointer-events","none");
+        const dot = g.append("circle")
+          .attr("cx",cx).attr("cy",cy).attr("r",R)
+          .attr("fill",col).attr("stroke","#fff").attr("stroke-width","2.5");
+        g.on("click", function(e){
+          e.stopPropagation();
+          if(activeDot) activeDot.attr("stroke","#fff").attr("stroke-width","2.5");
+          dot.attr("stroke","#1E5C2E").attr("stroke-width","3.5");
+          activeDot = dot;
+          openPanel(d);
+        })
+        .on("mouseenter", function(){ dot.attr("r", R+3); })
+        .on("mouseleave", function(){ dot.attr("r", R); });
+      });
+    }
+
+    d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world => {
+      svg.append("path").datum({type:"Sphere"}).attr("d", pg)
+        .attr("fill","#F2F0EB").attr("stroke","#D8D4CC").attr("stroke-width","0.5");
+      svg.append("path").datum(d3.geoGraticule()()).attr("d", pg)
+        .attr("fill","none").attr("stroke","rgba(0,0,0,0.04)").attr("stroke-width","0.3");
+      topojson.feature(world, world.objects.countries).features.forEach(f => {
+        svg.append("path").datum(f).attr("d", pg)
+          .attr("fill","#EAE7DF").attr("stroke","#D1CCC2").attr("stroke-width","0.4");
+      });
+      render();
+    });
+
+    document.querySelectorAll("#tsov [data-f]").forEach(b => b.onclick = function(){
+      fS = this.dataset.f;
+      document.querySelectorAll("#tsov [data-f]").forEach(x => x.classList.toggle("on", x.dataset.f === fS));
+      render();
+    });
+    document.querySelectorAll("#tsov [data-r]").forEach(b => b.onclick = function(){
+      fR = this.dataset.r;
+      document.querySelectorAll("#tsov [data-r]").forEach(x => x.classList.toggle("on", x.dataset.r === fR));
+      render();
+    });
+  })();
+  </script>
+
+  <section class="section section-tight" style="background: var(--color-surface-soft);">
+    <div class="wrap">
+      <div class="caption-uppercase" style="margin-bottom: 24px;">06.5 — Truly sovereign AI data centers, the full directory</div>
+      <h3 style="font-size: 24px; letter-spacing: -0.3px; margin: 0 0 12px; max-width: 60ch;">Every facility, with the sovereignty basis spelled out.</h3>
+      <p style="font-size: 16px; line-height: 1.6; color: var(--color-body); max-width: 70ch; margin: 0 0 24px;">34 facilities across 25+ countries where a government entity owns the compute, controls data governance, and operates the site. Search, sort, and filter; click any row for the full record.</p>
+
+      <div id="tdir">
+        <details class="tdir-disclosure">
+          <summary><span class="tdir-sum-label">Browse the full directory</span><span class="tdir-sum-meta">34 facilities &middot; searchable, filterable, sortable</span><span class="tdir-sum-chev">&#9662;</span></summary>
+        <div class="tdir-tools">
+          <input id="tdir-q" type="text" placeholder="Search facility, operator, country..." />
+          <select id="tdir-fstat">
+            <option value="all">All status</option>
+            <option value="Operational">Operational</option>
+            <option value="Under construction">Under construction</option>
+            <option value="Planned">Planned</option>
+          </select>
+          <select id="tdir-fctry">
+            <option value="all">All countries</option>
+          </select>
+          <span id="tdir-cnt"></span>
+        </div>
+
+        <div class="tdir-tablewrap">
+          <table id="tdir-tbl">
+            <thead>
+              <tr>
+                <th data-k="A" class="th-sort">Country</th>
+                <th data-k="B" class="th-sort">Facility</th>
+                <th data-k="C">Location</th>
+                <th data-k="F" class="th-sort th-num">MW</th>
+                <th data-k="G">Status</th>
+                <th data-k="K">Governing body</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="tdir-detail">
+          <span id="tdir-dclose">&#x2715;</span>
+          <div id="tdir-dctry"></div>
+          <div id="tdir-dname"></div>
+          <div id="tdir-dloc"></div>
+          <div class="tdir-drow"><div class="tdir-dlbl">Operator</div><div class="tdir-dval" id="tdir-dop"></div></div>
+          <div class="tdir-drow"><div class="tdir-dlbl">Type</div><div class="tdir-dval" id="tdir-dtype"></div></div>
+          <div class="tdir-drow"><div class="tdir-dlbl">Capacity</div><div class="tdir-dval" id="tdir-dcap"></div></div>
+          <div class="tdir-drow"><div class="tdir-dlbl">Status</div><div class="tdir-dval" id="tdir-dstat"></div></div>
+          <div class="tdir-drow"><div class="tdir-dlbl">Governing body</div><div class="tdir-dval" id="tdir-dgov"></div></div>
+          <div class="tdir-drow"><div class="tdir-dlbl">Sovereignty basis</div><div class="tdir-dval" id="tdir-dbasis"></div></div>
+          <div class="tdir-drow"><div class="tdir-dlbl">Source</div><div class="tdir-dval"><a id="tdir-dsrc" target="_blank" rel="noopener"></a></div></div>
+        </div>
+
+        <p class="tdir-src">Source: compiled from DOE program pages, EuroHPC JU, UKRI, GENCI, SDAIA, KAUST, NSCC Singapore, AIST/RIKEN, KISTI, NCHC, NCI Australia, Telebras, LNCC, Ethiopian AI Institute, and Kazakh Ministry of Digital Development announcements. Last updated May 2026.</p>
+        </details>
+
+        <div class="tdir-distinction">
+          <div class="tdir-dist-head">Distinction: Truly Sovereign vs Sovereign-Aligned</div>
+          <div class="tdir-dist-grid">
+            <div class="tdir-dist-col tdir-dist-colhdr"></div>
+            <div class="tdir-dist-col tdir-dist-colhdr tdir-dist-col1">Truly Sovereign</div>
+            <div class="tdir-dist-col tdir-dist-colhdr tdir-dist-col2">Sovereign-Aligned</div>
+
+            <div class="tdir-dist-rl">Ownership</div>
+            <div class="tdir-dist-v">Government owns the facility and compute</div>
+            <div class="tdir-dist-v">Privately owned; govt provides mandate, land, or co-investment</div>
+
+            <div class="tdir-dist-rl">Operations</div>
+            <div class="tdir-dist-v">Government directly operates</div>
+            <div class="tdir-dist-v">Private company operates under national programme</div>
+
+            <div class="tdir-dist-rl">Data governance</div>
+            <div class="tdir-dist-v">State controls all data access</div>
+            <div class="tdir-dist-v">Contractual data residency; govt has regulatory oversight</div>
+
+            <div class="tdir-dist-rl">Examples</div>
+            <div class="tdir-dist-v">DOE National Labs (US), EuroHPC, NSCC Singapore, Telebras Brazil</div>
+            <div class="tdir-dist-v">G42/Stargate UAE, Scala AI City, Mistral, SoftBank Japan, Indosat Indonesia</div>
+
+            <div class="tdir-dist-rl">Risk of dependency</div>
+            <div class="tdir-dist-v">None &mdash; state owns compute</div>
+            <div class="tdir-dist-v">Moderate &mdash; depends on private operator&rsquo;s continuity</div>
+
+            <div class="tdir-dist-rl">Typical funding</div>
+            <div class="tdir-dist-v">Govt budget / public procurement</div>
+            <div class="tdir-dist-v">Private capex + govt grants, loans, or co-investment</div>
+
+            <div class="tdir-dist-rl tdir-dist-rl-last">Auditability</div>
+            <div class="tdir-dist-v tdir-dist-v-last">Full (govt mandate)</div>
+            <div class="tdir-dist-v tdir-dist-v-last">Partial (contractual; varies by country)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    #tdir { color: var(--color-ink); }
+    .tdir-disclosure { margin-bottom: 0; }
+    .tdir-disclosure > summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--color-canvas);
+      border: 1px solid var(--color-hairline);
+      border-radius: 10px;
+      margin-bottom: 14px;
+      transition: background 0.12s;
+    }
+    .tdir-disclosure > summary::-webkit-details-marker { display: none; }
+    .tdir-disclosure > summary:hover { background: var(--color-surface-soft); }
+    .tdir-sum-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1E5C2E;
+      letter-spacing: -0.1px;
+    }
+    .tdir-sum-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--color-muted);
+    }
+    .tdir-sum-chev {
+      margin-left: auto;
+      color: var(--color-muted);
+      font-size: 12px;
+      transition: transform 0.18s;
+    }
+    .tdir-disclosure[open] > summary .tdir-sum-chev { transform: rotate(180deg); color: var(--color-primary); }
+    .tdir-disclosure[open] > summary { background: var(--color-surface-soft); border-color: var(--color-primary); }
+    .tdir-distinction {
+      margin-top: 28px;
+      border: 1px solid var(--color-hairline);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--color-canvas);
+    }
+    .tdir-dist-head {
+      background: #1E5C2E;
+      color: #fff;
+      padding: 14px 22px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      text-align: center;
+    }
+    .tdir-dist-grid {
+      display: grid;
+      grid-template-columns: 180px 1fr 1fr;
+    }
+    .tdir-dist-colhdr {
+      padding: 14px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-ink);
+      border-bottom: 1px solid var(--color-hairline);
+      background: var(--color-surface-soft);
+    }
+    .tdir-dist-col1 { color: var(--color-primary); }
+    .tdir-dist-col2 { color: var(--color-ink); }
+    .tdir-dist-rl {
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      border-bottom: 1px solid var(--color-hairline);
+      background: var(--color-surface-soft);
+    }
+    .tdir-dist-v {
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--color-body-strong);
+      line-height: 1.5;
+      border-bottom: 1px solid var(--color-hairline);
+      border-left: 1px solid var(--color-hairline);
+    }
+    .tdir-dist-rl-last, .tdir-dist-v-last { border-bottom: none; }
+    @media (max-width: 720px) {
+      .tdir-dist-grid { grid-template-columns: 1fr; }
+      .tdir-dist-v { border-left: none; }
+      .tdir-dist-colhdr:first-child { display: none; }
+    }
+    .tdir-tools {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .tdir-tools input, .tdir-tools select {
+      font-family: var(--font-body);
+      font-size: 13px;
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--color-hairline);
+      background: var(--color-canvas);
+      color: var(--color-body-strong);
+    }
+    .tdir-tools input { min-width: 260px; }
+    #tdir-cnt {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-muted);
+    }
+    .tdir-tablewrap {
+      border: 1px solid var(--color-hairline);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--color-canvas);
+    }
+    #tdir-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    #tdir-tbl thead th {
+      background: var(--color-surface-soft);
+      border-bottom: 1px solid var(--color-hairline);
+      padding: 12px 14px;
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    #tdir-tbl thead th.th-num { text-align: right; }
+    #tdir-tbl thead th.th-sort { cursor: pointer; user-select: none; }
+    #tdir-tbl thead th.th-sort:hover { color: var(--color-ink); }
+    #tdir-tbl thead th.th-sort.asc::after { content: " \2191"; color: var(--color-primary); }
+    #tdir-tbl thead th.th-sort.desc::after { content: " \2193"; color: var(--color-primary); }
+    #tdir-tbl tbody tr {
+      cursor: pointer;
+      border-bottom: 1px solid var(--color-hairline);
+      transition: background 0.12s;
+    }
+    #tdir-tbl tbody tr:last-child { border-bottom: none; }
+    #tdir-tbl tbody tr:hover { background: var(--color-surface-soft); }
+    #tdir-tbl tbody td {
+      padding: 12px 14px;
+      color: var(--color-body-strong);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+    #tdir-tbl tbody td.td-num { text-align: right; font-variant-numeric: tabular-nums; }
+    #tdir-tbl tbody td.td-name { font-weight: 500; color: var(--color-ink); }
+    #tdir-tbl tbody td.td-loc { color: var(--color-muted); font-size: 12px; }
+    .tdir-stat-pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+    .tdir-stat-pill.op { background: rgba(30,92,46,0.12); color: #1E5C2E; }
+    .tdir-stat-pill.uc { background: rgba(232,165,90,0.18); color: #B17236; }
+    .tdir-stat-pill.pl { background: rgba(93,184,166,0.18); color: #2E7E70; }
+    #tdir-detail {
+      display: none;
+      margin-top: 16px;
+      background: var(--color-canvas);
+      border: 1px solid var(--color-hairline);
+      border-left: 3px solid var(--color-primary);
+      border-radius: 0 12px 12px 0;
+      padding: 22px 26px 24px;
+      position: relative;
+    }
+    #tdir-detail.open { display: block; }
+    #tdir-dclose {
+      position: absolute; top: 14px; right: 18px;
+      font-size: 16px; color: var(--color-muted);
+      cursor: pointer; line-height: 1;
+    }
+    #tdir-dctry {
+      font-family: var(--font-mono);
+      font-size: 11px; letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin-bottom: 4px;
+    }
+    #tdir-dname {
+      font-size: 18px; font-weight: 500;
+      color: var(--color-ink); line-height: 1.3;
+    }
+    #tdir-dloc {
+      font-size: 12px; color: var(--color-muted);
+      margin: 4px 0 16px;
+      font-family: var(--font-mono);
+    }
+    .tdir-drow {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 16px;
+      padding: 9px 0;
+      border-top: 1px solid var(--color-hairline);
+    }
+    .tdir-dlbl {
+      font-family: var(--font-mono);
+      font-size: 10px; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      padding-top: 2px;
+    }
+    .tdir-dval {
+      font-size: 13px; color: var(--color-body-strong);
+      line-height: 1.55;
+    }
+    .tdir-dval a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
+    .tdir-src {
+      font-size: 12px; color: var(--color-muted);
+      margin-top: 16px; line-height: 1.5;
+      max-width: 75ch;
+    }
+    @media (max-width: 720px) {
+      .tdir-tools input { min-width: 0; flex: 1 1 100%; }
+      #tdir-cnt { margin-left: 0; flex-basis: 100%; }
+      #tdir-tbl thead th:nth-child(3), #tdir-tbl tbody td:nth-child(3),
+      #tdir-tbl thead th:nth-child(6), #tdir-tbl tbody td:nth-child(6) { display: none; }
+      .tdir-drow { grid-template-columns: 1fr; gap: 4px; }
+    }
+  </style>
+
+  <script>
+  (function(){
+    const ROWS = [
+      {ctry:"United States",name:"Oak Ridge NL — Frontier (DOE OLCF)",loc:"Oak Ridge, TN",mw:1500,stat:"Operational",op:"US Dept of Energy / ORNL",type:"DOE exascale supercomputer",basis:"Federally owned & operated; DOE Office of Science controls access and data governance",gov:"DOE",url:"https://www.ornl.gov"},
+      {ctry:"United States",name:"Oak Ridge NL — Lux AI Cluster",loc:"Oak Ridge, TN",mw:200,stat:"Under construction",op:"US Dept of Energy / ORNL / AMD",type:"DOE national AI",basis:"Public-private build; DOE owns facility and data governance",gov:"DOE",url:"https://www.ornl.gov"},
+      {ctry:"United States",name:"Argonne NL — Aurora (DOE ALCF)",loc:"Lemont, IL",mw:600,stat:"Operational",op:"US Dept of Energy / Argonne NL",type:"DOE exascale supercomputer",basis:"Federally owned & operated; DOE Office of Science",gov:"DOE",url:"https://www.anl.gov"},
+      {ctry:"United States",name:"Argonne NL — Equinox AI Supercomputer",loc:"Lemont, IL",mw:400,stat:"Under construction",op:"US Dept of Energy / Argonne NL",type:"DOE national AI",basis:"DOE-owned facility; sovereign AI designation by DOE",gov:"DOE",url:"https://www.anl.gov"},
+      {ctry:"United States",name:"Lawrence Livermore NL — El Capitan (NNSA)",loc:"Livermore, CA",mw:600,stat:"Operational",op:"NNSA / Lawrence Livermore NL",type:"NNSA national security AI",basis:"Classified national security; NNSA-owned & operated, air-gapped",gov:"NNSA",url:"https://www.llnl.gov"},
+      {ctry:"United States",name:"Los Alamos NL — Venado & Mission (NNSA)",loc:"Los Alamos, NM",mw:500,stat:"Operational",op:"NNSA / Los Alamos NL",type:"NNSA national security AI",basis:"NNSA-owned; nuclear security & national defence mandate",gov:"NNSA",url:"https://www.lanl.gov"},
+      {ctry:"United States",name:"Lawrence Berkeley NL — NERSC-10",loc:"Berkeley, CA",mw:200,stat:"Operational",op:"US Dept of Energy / LBNL",type:"DOE national AI research",basis:"Federally owned; DOE Office of Science national user facility",gov:"DOE",url:"https://www.nersc.gov"},
+      {ctry:"United States",name:"Sandia National Laboratories (NNSA)",loc:"Albuquerque, NM",mw:150,stat:"Operational",op:"NNSA / Sandia NL",type:"NNSA nuclear security AI",basis:"NNSA-owned; classified nuclear security compute",gov:"NNSA",url:"https://www.sandia.gov"},
+      {ctry:"United States",name:"DOE Paducah Site — Federal AI Campus",loc:"Paducah, KY",mw:3000,stat:"Planned",op:"US Dept of Energy",type:"DOE federal AI campus",basis:"DOE federal land designation; govt-owned site for sovereign AI (DOE RFI 2025)",gov:"DOE",url:"https://www.energy.gov"},
+      {ctry:"United States",name:"DOE Savannah River Site — AI Campus",loc:"Aiken, SC",mw:500,stat:"Planned",op:"US Dept of Energy",type:"DOE federal AI campus",basis:"DOE federal land; govt-owned site for sovereign AI (DOE RFI 2025)",gov:"DOE",url:"https://www.energy.gov"},
+      {ctry:"United States",name:"DOE Idaho National Laboratory — AI Site",loc:"Idaho Falls, ID",mw:500,stat:"Planned",op:"US Dept of Energy / INL",type:"DOE federal AI site",basis:"DOE federal land; govt-owned nuclear and AI site",gov:"DOE",url:"https://inl.gov"},
+      {ctry:"Finland",name:"LUMI — EuroHPC (Kajaani)",loc:"Kajaani, Finland",mw:17,stat:"Operational",op:"EuroHPC JU / CSC (Finnish state IT centre)",type:"EU sovereign supercomputer",basis:"EU + Finnish govt owned; CSC is a Finnish state company",gov:"EuroHPC JU",url:"https://www.lumi-supercomputer.eu"},
+      {ctry:"Spain",name:"MareNostrum 5 — EuroHPC (Barcelona)",loc:"Barcelona, Spain",mw:20,stat:"Operational",op:"EuroHPC JU / BSC (Spanish state)",type:"EU sovereign supercomputer",basis:"EU + Spanish govt owned; BSC is a state entity",gov:"EuroHPC JU",url:"https://www.bsc.es"},
+      {ctry:"Italy",name:"CINECA — EuroHPC (Bologna)",loc:"Bologna, Italy",mw:25,stat:"Operational",op:"EuroHPC JU / CINECA",type:"EU sovereign supercomputer",basis:"EU + Italian govt funded; CINECA is under public law",gov:"EuroHPC JU",url:"https://www.cineca.it"},
+      {ctry:"Germany",name:"JUWELS — EuroHPC / FZJ (Jülich)",loc:"Jülich, Germany",mw:80,stat:"Operational",op:"EuroHPC JU / Forschungszentrum Jülich",type:"EU sovereign supercomputer",basis:"EU + German federal govt owned; FZJ is a German public research centre",gov:"EuroHPC JU",url:"https://www.fz-juelich.de"},
+      {ctry:"Luxembourg",name:"MeluXina — EuroHPC (Bissen)",loc:"Bissen, Luxembourg",mw:5,stat:"Operational",op:"EuroHPC JU / LuxProvide (Luxembourg Govt)",type:"EU sovereign supercomputer",basis:"EU + Luxembourg govt owned; LuxProvide is Luxembourg state entity",gov:"EuroHPC JU",url:"https://luxprovide.lu"},
+      {ctry:"Bulgaria",name:"Sofia Tech Park — EuroHPC",loc:"Sofia, Bulgaria",mw:10,stat:"Operational",op:"EuroHPC JU / Sofia Tech Park (Bulgarian state)",type:"EU sovereign supercomputer",basis:"EU + Bulgarian govt owned; Sofia Tech Park is state institution",gov:"EuroHPC JU",url:"https://sofiatech.bg"},
+      {ctry:"United Kingdom",name:"Isambard-AI — UKRI (Bristol)",loc:"Bristol, UK",mw:80,stat:"Operational",op:"UKRI / University of Bristol (public)",type:"UK national AI supercomputer",basis:"UK govt funded via UKRI; publicly owned national AI research resource",gov:"UKRI",url:"https://www.isambard.ac.uk"},
+      {ctry:"United Kingdom",name:"Dawn AI Supercomputer — UKRI (Cambridge)",loc:"Cambridge, UK",mw:30,stat:"Operational",op:"UKRI / University of Cambridge (public)",type:"UK national AI research",basis:"UK govt funded; UKRI-owned national AI compute resource",gov:"UKRI",url:"https://www.hpc.cam.ac.uk"},
+      {ctry:"France",name:"Jean Zay Supercomputer — IDRIS (Saclay)",loc:"Saclay, France",mw:30,stat:"Operational",op:"CNRS / GENCI (French state)",type:"French national AI research",basis:"Owned by GENCI, a French state organisation; operated by CNRS",gov:"GENCI / CNRS",url:"https://www.idris.fr"},
+      {ctry:"Saudi Arabia",name:"SDAIA National AI Centre (Riyadh)",loc:"Riyadh, Saudi Arabia",mw:500,stat:"Operational",op:"SDAIA — Saudi Data & AI Authority",type:"Saudi national AI authority",basis:"Saudi royal decree body; government ministry-level AI authority with owned compute",gov:"SDAIA",url:"https://sdaia.gov.sa"},
+      {ctry:"Saudi Arabia",name:"KAUST Supercomputing Core Lab",loc:"Thuwal, Saudi Arabia",mw:120,stat:"Operational",op:"King Abdullah Univ of Science & Technology (state)",type:"Saudi state university AI",basis:"Saudi state university; fully funded by Saudi government",gov:"KAUST",url:"https://www.kaust.edu.sa"},
+      {ctry:"Singapore",name:"NSCC Singapore — Aspire 2",loc:"Singapore",mw:40,stat:"Operational",op:"National Supercomputing Centre Singapore",type:"Singapore national AI",basis:"Govt owned; NSCC is a national facility under NRF and A*STAR",gov:"NSCC",url:"https://www.nscc.sg"},
+      {ctry:"Japan",name:"AIST Supercomputer ABCI",loc:"Kashiwa, Japan",mw:60,stat:"Operational",op:"AIST — National Institute of Advanced Industrial Science & Technology",type:"Japanese national AI research",basis:"Japanese govt owned; AIST is a national research institution under METI",gov:"METI / AIST",url:"https://abci.ai"},
+      {ctry:"Japan",name:"RIKEN R-CCS — Fugaku Supercomputer",loc:"Kobe, Japan",mw:30,stat:"Operational",op:"RIKEN / Japanese Govt (MEXT)",type:"Japanese national HPC / AI",basis:"Japanese govt owned; RIKEN is a national research institute",gov:"MEXT / RIKEN",url:"https://www.r-ccs.riken.jp"},
+      {ctry:"India",name:"IndiaAI Mission — C-DAC National AI Hub",loc:"Pune, India",mw:150,stat:"Under construction",op:"MeitY / C-DAC",type:"India national AI mission",basis:"Indian central govt; C-DAC is a govt R&D organisation under MeitY",gov:"MeitY / C-DAC",url:"https://cdac.in"},
+      {ctry:"South Korea",name:"KISTI — NURION Supercomputer",loc:"Daejeon, South Korea",mw:50,stat:"Operational",op:"KISTI — Korea Institute of Science & Technology Information",type:"South Korean national AI",basis:"South Korean govt owned; KISTI is a govt science institute",gov:"KISTI",url:"https://www.kisti.re.kr"},
+      {ctry:"Taiwan",name:"NCHC National Centre for HPC",loc:"Hsinchu, Taiwan",mw:30,stat:"Operational",op:"NCHC / National Applied Research Laboratories (Taiwan govt)",type:"Taiwan national AI research",basis:"Taiwan govt owned; NCHC is under National Applied Research Labs",gov:"NARLabs / NCHC",url:"https://www.nchc.org.tw"},
+      {ctry:"Australia",name:"NCI Australia — Gadi Supercomputer",loc:"Canberra, Australia",mw:20,stat:"Operational",op:"NCI Australia (Australian Govt / ANU)",type:"Australian national AI research",basis:"Australian govt funded; NCI is a national facility under federal mandate",gov:"NCI / ANU",url:"https://nci.org.au"},
+      {ctry:"Brazil",name:"Telebras National Sovereign Cloud",loc:"Brasília, Brazil",mw:50,stat:"Operational",op:"Telebras — Brazilian state telecommunications company",type:"Brazil national sovereign cloud",basis:"100% state-owned federal enterprise; designated national sovereign cloud by Brazilian govt",gov:"Telebras",url:"https://www.telebras.com.br"},
+      {ctry:"Brazil",name:"SoberanIA Data Vault — Telebras",loc:"Brasília, Brazil",mw:80,stat:"Planned",op:"Telebras / MCTI",type:"Brazil sovereign AI repository",basis:"State-owned operator (Telebras) + govt ministry; national sovereign AI programme",gov:"MCTI / Telebras",url:"https://www.gov.br/mcti"},
+      {ctry:"Brazil",name:"LNCC — Santos Dumont Supercomputer",loc:"Petrópolis, Brazil",mw:15,stat:"Operational",op:"LNCC — National Scientific Computing Laboratory",type:"Brazil national AI research",basis:"Brazilian federal govt; LNCC is a research unit of MCTI",gov:"MCTI / LNCC",url:"https://www.lncc.br"},
+      {ctry:"Ethiopia",name:"Ethiopian AI Institute — National AI DC",loc:"Addis Ababa, Ethiopia",mw:15,stat:"Planned",op:"Ethiopian AI Institute (federal govt body)",type:"Ethiopia national AI",basis:"Ethiopian federal government institution established by proclamation",gov:"Ethiopian Govt",url:"https://etai.gov.et"},
+      {ctry:"Kazakhstan",name:"Kazakhstan Ministry of AI — Astana DC",loc:"Astana, Kazakhstan",mw:50,stat:"Planned",op:"Kazakhstan Ministry of Digital Development",type:"Kazakhstan national AI",basis:"Kazakh government ministry; state-owned national AI compute",gov:"Kazakh Govt",url:"https://www.gov.kz"}
+    ];
+
+    const statClass = s => s === "Operational" ? "op" : (s === "Under construction" ? "uc" : "pl");
+    let sortKey = null, sortDir = 1;
+    let qStr = "", fStat = "all", fCtry = "all";
+
+    const tbody = document.querySelector("#tdir-tbl tbody");
+    const cnt = document.getElementById("tdir-cnt");
+
+    // populate country filter
+    const ctrySel = document.getElementById("tdir-fctry");
+    [...new Set(ROWS.map(r => r.ctry))].sort().forEach(c => {
+      const o = document.createElement("option");
+      o.value = c; o.textContent = c;
+      ctrySel.appendChild(o);
+    });
+
+    function render(){
+      const q = qStr.toLowerCase().trim();
+      let rows = ROWS.filter(r => {
+        if (fStat !== "all" && r.stat !== fStat) return false;
+        if (fCtry !== "all" && r.ctry !== fCtry) return false;
+        if (q) {
+          const hay = (r.name + " " + r.op + " " + r.ctry + " " + r.loc + " " + r.gov).toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+      if (sortKey) {
+        const km = {A:"ctry",B:"name",F:"mw"};
+        const k = km[sortKey];
+        rows.sort((a,b) => {
+          const va = a[k], vb = b[k];
+          if (typeof va === "number") return (va - vb) * sortDir;
+          return String(va).localeCompare(String(vb)) * sortDir;
+        });
+      }
+      cnt.textContent = rows.length + " of " + ROWS.length + " facilities";
+      tbody.innerHTML = rows.map(r => {
+        const cap = r.mw >= 1000 ? (r.mw/1000).toFixed(1) + " GW" : r.mw + " MW";
+        const cls = statClass(r.stat);
+        return '<tr data-key="' + r.name.replace(/"/g,'&quot;') + '">'
+          + '<td>' + r.ctry + '</td>'
+          + '<td class="td-name">' + r.name + '</td>'
+          + '<td class="td-loc">' + r.loc + '</td>'
+          + '<td class="td-num">' + cap + '</td>'
+          + '<td><span class="tdir-stat-pill ' + cls + '">' + r.stat + '</span></td>'
+          + '<td>' + r.gov + '</td>'
+          + '</tr>';
+      }).join("");
+      tbody.querySelectorAll("tr").forEach(tr => {
+        tr.onclick = function(){
+          const r = ROWS.find(x => x.name === this.dataset.key);
+          if (!r) return;
+          document.getElementById("tdir-dctry").textContent = r.ctry;
+          document.getElementById("tdir-dname").textContent = r.name;
+          document.getElementById("tdir-dloc").textContent = r.loc;
+          document.getElementById("tdir-dop").textContent = r.op;
+          document.getElementById("tdir-dtype").textContent = r.type;
+          document.getElementById("tdir-dcap").textContent = r.mw >= 1000 ? (r.mw/1000).toFixed(1) + " GW (" + r.mw + " MW)" : r.mw + " MW";
+          document.getElementById("tdir-dstat").textContent = r.stat;
+          document.getElementById("tdir-dgov").textContent = r.gov;
+          document.getElementById("tdir-dbasis").textContent = r.basis;
+          const a = document.getElementById("tdir-dsrc");
+          a.href = r.url; a.textContent = r.url.replace(/^https?:\/\//,"");
+          document.getElementById("tdir-detail").classList.add("open");
+        };
+      });
+    }
+
+    document.getElementById("tdir-q").oninput = function(){ qStr = this.value; render(); };
+    document.getElementById("tdir-fstat").onchange = function(){ fStat = this.value; render(); };
+    document.getElementById("tdir-fctry").onchange = function(){ fCtry = this.value; render(); };
+    document.getElementById("tdir-dclose").onclick = function(){
+      document.getElementById("tdir-detail").classList.remove("open");
+    };
+    document.querySelectorAll("#tdir-tbl th.th-sort").forEach(th => {
+      th.onclick = function(){
+        const k = this.dataset.k;
+        if (sortKey === k) { sortDir = -sortDir; }
+        else { sortKey = k; sortDir = 1; }
+        document.querySelectorAll("#tdir-tbl th.th-sort").forEach(x => x.classList.remove("asc","desc"));
+        this.classList.add(sortDir === 1 ? "asc" : "desc");
+        render();
+      };
+    });
+
+    render();
+  })();
+  </script>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="scripts/chrome.js"></script>
+<script src="scripts/tweaks.js"></script>
+</body>
+</html>
