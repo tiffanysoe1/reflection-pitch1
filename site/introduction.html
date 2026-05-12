@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>02 · Introduction — Reflection AI pitch</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/site.css">
+</head>
+<body data-page="introduction" data-screen-label="02 Introduction">
+<div id="site-nav"></div>
+
+<main>
+  <header class="page-header">
+    <div class="wrap">
+      <div class="kicker"><span class="page-num">02 / 08</span> Introduction &amp; basics</div>
+      <h1>Introduction &amp; Basics</h1>
+      <p class="lede"></p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="two-col" style="font-size: 22px">
+        <aside class="col-kicker">02.1
+BASICS</aside>
+        <div class="prose">
+          <p class="lede-p">What is Open-source LLMs?</p>
+          <p>Open Source models are AI models whose parameters are available to download. There are three taxonomies of openness:</p>
+          <ul>
+            <li><b style="font-weight: 400; color: #2c2c2c">Fully closed</b> — API access only (OpenAI GPT-4, Anthropic Claude)</li>
+            <li><b style="font-weight: 400">Weights-open</b> — model weights released, training data closed (Meta LLaMA, Mistral, DeepSeek)</li>
+            <li><b style="font-weight: 400">Fully open</b> — weights + data + training process (OLMo, some Hugging Face models)</li>
+          </ul>
+
+          <p class="lede-p" style="margin-top: 32px;">What is Sovereign AI?</p>
+          <p>Leaders are concerned about their ability to run AI systems with some level of independence from foreign technology providers. Sovereign AI is an entire ecosystem — owning the physical layer, keeping the country's data within its borders and governance.</p>
+          <p>Instead of waiting for private companies to do anything, the government acts as the primary customer. They identify the biggest needs — healthcare, banking — and pledge to use and fund AI for those specific areas. The government sets up rules on who is allowed to see the data, how it's encrypted, and what happens if the system is hacked.</p>
+
+          <p style="margin-top: 24px;"><b>The four pillars of AI sovereignty:</b></p>
+          <ul style="font-weight: 400">
+            <li><b style="color: #2c2c2c">Compute</b> — domestic access to GPU infrastructure and energy</li>
+            <li><b>Data</b> — national data assets, localization, and governance frameworks</li>
+            <li><b>M</b> — ability to train, fine-tune, or at minimum adapt frontier models</li>
+            <li><b>Governance</b> — regulatory control, auditability, and value alignment</li>
+          </ul>
+
+          <p class="lede-p" style="margin-top: 32px;">The five strategic advantages of Open-Source LLMs</p>
+
+          <p style="margin-top: 16px;"><b>1. Infrastructure Independence</b></p>
+          <ul>
+            <li>Open weights can be deployed on domestic hardware — no API calls to foreign servers</li>
+            <li>Eliminates dependency on foreign cloud providers for critical government workloads</li>
+            <li>Allows 'air-gapped' deployment for defence, intelligence, and sensitive data applications</li>
+          </ul>
+
+          <p style="margin-top: 16px;"><b>2. Cost Control at Scale</b></p>
+          <ul>
+            <li>Enterprise and government users can run open models on their own infrastructure, controlling GPU costs directly</li>
+            <li>Avoids per-token pricing from closed providers, which becomes prohibitive at national scale</li>
+            <li>Reflection AI (Misha): 'Once you get into large enterprise territory, by default you want an open model. You can run it on your infrastructure. You can control its costs.'</li>
+          </ul>
+
+          <p style="margin-top: 16px;"><b>3. Customisation and Localisation</b></p>
+          <ul>
+            <li>Open weights enable fine-tuning on domestic language, law, culture, and sensitive datasets</li>
+            <li>Cultural alignment: a model trained on local data reflects local values, reducing the risk of foreign value imposition</li>
+          </ul>
+
+          <p style="margin-top: 16px;"><b>4. Auditability</b></p>
+          <ul>
+            <li>Open weights allow independent security audits — critical for government and defence use cases</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section class="section">
+    <div class="wrap">
+      <div class="two-col" style="font-size: 22px">
+        <aside class="col-kicker">02.2
+REFLECTION AI'S BUSINESS</aside>
+        <div class="prose">
+          <p class="lede-p">Where Reflection is focusing today</p>
+
+          <div class="sidenote">
+            <span class="label">Context</span>
+            Reflection shifted towards open models after realizing there wasn't a strong frontier base model available for RL training. Ioannis mentioned his focus is now building that base model. Applications come later.
+          </div>
+
+          <ul>
+            <li>Reflection aims to <strong>build RL at scale</strong> — using RL during the pre-training process to help models learn "trajectories" rather than just predicting the next word.</li>
+            <li>The main challenge is that <strong>scaling up RL is even more challenging than scaling up LLMs</strong>. The machine learning systems stack is challenging. RL at scale also suffers from reward hacking and many other problems.</li>
+            <li>One real-world impact is to create an <strong>AI system that navigates the entire software development cycle</strong>, not just code generation. While LLMs are excellent at writing isolated code, end-to-end workflows have many more parts. How do you scale up your system to generalise across all domains?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="scripts/chrome.js"></script>
+<script src="scripts/tweaks.js"></script>
+</body>
+</html>
