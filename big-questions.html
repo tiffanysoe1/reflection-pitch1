@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>03 · The Big Questions — Reflection AI pitch</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/site.css">
+</head>
+<body data-page="big-questions" data-screen-label="03 Big Questions">
+<div id="site-nav"></div>
+
+<main>
+  <header class="page-header">
+    <div class="wrap">
+      <div class="kicker"><span class="page-num">03 / 08</span> The big questions</div>
+      <h1>The big questions</h1>
+      <p class="lede">The future and current state of AI Labs</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+
+      <article style="display: grid; grid-template-columns: 80px 1fr; gap: 48px; padding: 56px 0; border-top: 1px solid var(--color-hairline); font-weight: 300">
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--color-primary);">Q1</div>
+        <div class="prose" style="margin: 0;">
+          <h2 style="margin: 0 0 16px;">The Reflection Future</h2>
+          <p>According to Alex, serious enterprises will want their homegrown, user-data-tuned AI to run on-prem or in a leased AI factory. Clouds who fulfill all the compliance won't be enough. The art &amp; science of LLM development would spread, and there will be a need for the service that Reflection and other open models bring.
+
+
+Reflection is trying to build the whole stack end-to-end, supplying the whole system enterprise[1]. In the era of a changing world order, relying on a third-party closed model provider creates significant strategic risk. The threat of a platform being shut off makes open models infrastructure a necessity rather than an option. </p>
+          <p style="font-weight: 400">What I'm curious about: If it took years for a F500 company to move from on-prem to cloud, how long will it take for existing F500 who are already API-ed to Anthropic to shift to a new on-prem platform, and how much are they incentivised to do so?  Claude suggested the workload shift will take 6-18 months.The security argument make sense, but given the "work" and human nature, will it end up being a hybrid model where high security workloads are routed to on-prem?</p>
+        </div>
+      </article>
+
+      <article style="display:grid; grid-template-columns: 80px 1fr; gap: 48px; padding: 56px 0; border-top: 1px solid var(--color-hairline);">
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--color-primary);">Q2</div>
+        <div class="prose" style="margin: 0;">
+          <h2 style="margin: 0 0 16px;">The Anthropic Future</h2>
+          <p>In a recent interview*, Dario mentioned that every community that AI has gone through has a set of heuristics about how things work - "commodization, moats, which layer has the value". 
+
+
+He believed that performance and cost of running inference matter far more than the visibility of the weight. The open-weight framing, he suggested, is a red herring. The assumption that more contributors means better outcomes - that progress is somehow additive - doesn't hold in this domain the way it does in traditional open-source software.
+
+
+When Dario thinks of competition, he strips it down to two questions: Is it a good model? How much does it cost to run?</p>
+        </div>
+      </article>
+
+      <article style="display:grid; grid-template-columns: 80px 1fr; gap: 48px; padding: 56px 0; border-top: 1px solid var(--color-hairline);">
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--color-primary);">Q3</div>
+        <div class="prose" style="margin: 0;">
+          <h2 style="margin: 0 0 16px;">The Mistral Game </h2>
+          <p>I've watched a couple of interviews that Misha(Reflection) and Timothee/Arthur (Mistral) made. It maps onto a deeper strategic question: where does the value in AI actually accrue?<br><br>Misha argues that intelligence is the product. Reflection's wager is that closing the gap between open-weights and frontier labs is the highest ROI investment a lab can make.<br><br>Mistral's position seemed to be more conservative. Their bet is on the stack: building pipelines, tooling and software infrastructure that make the model genuinely useful in deployment. The insight here is that enterprise buyers don't purchase intelligence in the abstract - they purchase reliable systems. The EU AI Act has become its structural moat, where data residency, auditability and regulatory alignment are prerequisites.<br><br>The verdict: Mistral's "usefulness over intelligence" framing only holds if the model quality is good enough to begin with. If a competitor releases a model that is both more capable and equally deployable, the stack advantage collapses. Mistral's bet is therefore implicitly a bet that model quality above a threshold stops being the most important variable for its target customers.</p>
+          <div class="sidenote" style="background-color: rgb(207, 205, 202)"><span class="label" style="font-size: 22px">MY QUESTION:</span>
+Is Mistral's head start on building enterprise relationships and EU regulatory credibility going to affect Reflection?  My intuitive take is that both companies are fishing in different ponds. If Reflection delivers a far better model, it will put pressure on Mistral's Non-EU revenue. </div>
+        </div>
+      </article>
+
+      <article style="display:grid; grid-template-columns: 80px 1fr; gap: 48px; padding: 56px 0; border-top: 1px solid var(--color-hairline);">
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--color-primary);">Q4</div>
+        <div class="prose" style="margin: 0;">
+          <h2 style="margin: 0 0 16px;">The Current DeepSeek Game</h2>
+          <p>Deepseek is strategically priced to be extremely competitive. In March 2025, they announced a theoretical cost-profit margin of their reasoning system at 545%. However, actual revenue is lower due to heavy discounts and a large portion of users accessing the service for free.<br><br>The information given was: $2/hour of GPU leasing per day, $87,072 GPU cost per day and $562,027 revenue per day.<br><br>This leads to my estimates of: 1,814 inference GPUs that run 24/7. Assuming a 78% input token at $0.55 and 22% output token at $2.19, revenue is $0.911 per 1M tokens. This means they process 617 billion tokens per day. As of May 7, 2026, negotiations indicate that DeepSeek's valuation is currently estimated at $515 billion USD. The $7.35B Series A includes $3B of Liang's own contribution. He is committed to achieving AGI.</p>
+        </div>
+      </article>
+
+      <article style="display:grid; grid-template-columns: 80px 1fr; gap: 48px; padding: 56px 0; border-top: 1px solid var(--color-hairline);">
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--color-primary);">Q5</div>
+        <div class="prose" style="margin: 0;">
+          <h2 style="margin: 0 0 16px;">Other Chinese Models</h2>
+          <p>Baichuan AI has decided to focus on medical vertical large models, giving up on pre-training new foundational LLMs. The release of DeepSeek's open-weights high-performance models made it difficult to justify other startups' immense cost of training their own foundational model. </p>
+        </div>
+      </article>
+
+      <article style="display:grid; grid-template-columns: 80px 1fr; gap: 48px; padding: 56px 0; border-top: 1px solid var(--color-hairline); border-bottom: 1px solid var(--color-hairline);">
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--color-primary);">
+</div>
+        <div class="prose" style="margin: 0;">
+          <h2 style="margin: 0 0 16px;">
+</h2>
+          <p>
+</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom: 32px;">
+    <div class="card-cream-soft" style="padding: 48px;">
+      <div class="caption-uppercase" style="margin-bottom: 16px;">A note on this chapter</div>
+      <p style="font-size: 19px; line-height: 1.55; max-width: 70ch; color: var(--color-ink); margin: 0;">https://m.thepaper.cn/newsDetail_forward_30319319
+
+https://www.kucoin.com/news/flash/deepseek-s-valuation-surpasses-515-billion-as-founder-liang-wenfeng-leads-7-35-billion-series-a-round</p>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="scripts/chrome.js"></script>
+<script src="scripts/tweaks.js"></script>
+</body>
+</html>
